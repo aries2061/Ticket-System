@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"> 
+  <title>ရုပ်ရှင်လက်မှတ်မှာရန်</title>
+  <style>
+    body {
+      font-family: "Noto Sans Myanmar", sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .ticket-container {
+      max-width: 500px;
+      background: white;
+      padding: 25px;
+      margin: auto;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    h2, p {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .movie-info {
+      background: #eee;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .seats {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+      justify-content: center;
+    }
+
+    .seat {
+      background-color: #ddd;
+      border-radius: 6px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .seat.selected {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .seat.sold {
+      background-color: #999;
+      cursor: not-allowed;
+    }
+
+    .price {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .book-btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      background: #2196F3;
+      color: white;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .book-btn:hover {
+      background: #1976D2;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="ticket-container" id="bookingPage">
+    <h2>🎬 ရုပ်ရှင်လက်မှတ်မှာရန်</h2>
+
+    <div class="movie-info">
+      <p><strong>ရုပ်ရှင်:</strong> What Happened to the Wolf?</p>
+      <p><strong>အချိန်:</strong> 7:00 PM</p>
+      <p><strong>Cinema:</strong> SF Cinema, Chaing Mai, Thailand</p>
+    </div>
+
+    <p>🪑 ထိုင်ခုံရွေးချယ်ပါ</p>
+    <div class="seats" id="seatContainer">
+      <!-- Seats will be added by JS -->
+    </div>
+
+    <p class="price">💰 Seat - 300 THB</p>
+    <button class="book-btn" id="bookButton">မှာယူမည်</button>
+  </div>
+
+  <div class="ticket-container" id="ticketPage" style="display: none;">
+    <h3 style="text-align: center;">🎟️ E-TICKET</h3>
+    <p><strong>ရုပ်ရှင်:</strong> What happened to the Wolf?</p>
+    <p><strong>အချိန်:</strong> 7:00 PM, June 1, 2025</p>
+    <p><strong>Cinema:</strong> SF Cinema Mandalay</p>
+    <p><strong>ထိုင်ခုံ:</strong> <span id="seatDisplay"></span></p>
+    <p><strong>လက်မှတ် ID:</strong> <span id="ticketID"></span></p>
+    <div style="text-align:center;">
+      <img id="qrImage" src="" alt="QR Code">
+    </div>
+    <p style="text-align:center; font-size:12px; color:#555; margin-top:10px;">
+      ရုပ်ရှင်ရုံဝင်ရန်အတွက် ဤလက်မှတ်ကို ပြပါရန်လိုအပ်ပါသည်။<br>
+      လာရောက်အားပေးသည့်အတွက် ကျေးဇူးတင်ပါသည် 🎬
+    </p>
+  </div>
+
+  <script>
+    const seatContainer = document.getElementById('seatContainer');
+    const bookButton = document.getElementById('bookButton');
+    const bookingPage = document.getElementById('bookingPage');
+    const ticketPage = document.getElementById('ticketPage');
+    const seatDisplay = document.getElementById('seatDisplay');
+    const ticketIDDisplay = document.getElementById('ticketID');
+    const qrImage = document.getElementById('qrImage');
+
+    const soldSeats = ['B2', 'C3'];
+
+    for (let row of ['A','B','C','D']) {
+      for (let i = 1; i <= 5; i++) {
+        const seat = document.createElement('div');
+        const seatId = row + i;
+        seat.textContent = seatId;
+        seat.classList.add('seat');
+        if (soldSeats.includes(seatId)) seat.classList.add('sold');
+        seat.onclick = () => {
+          if (!seat.classList.contains('sold')) {
+            seat.classList.toggle('selected');
+          }
+        };
+        seatContainer.appendChild(seat);
+      }
+    }
+
+    function bookTicket() {
+      const selectedSeats = Array.from(document.querySelectorAll('.seat.selected')).map(s => s.textContent);
+      if (selectedSeats.length === 0) {
+        alert('ကျေးဇူးပြု၍ ထိုင်ခုံရွေးချယ်ပါ။');
+        return;
+      }
+      const ticketID = 'TKT-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+      const seat = selectedSeats.join(', ');
+      const qrLink = `https://api.qrserver.com/v1/create-qr-code/?data=${ticketID}&size=120x120`;
+
+      seatDisplay.textContent = seat;
+      ticketIDDisplay.textContent = ticketID;
+      qrImage.src = qrLink;
+
+      bookingPage.style.display = 'none';
+      ticketPage.style.display = 'block';
+    }
+
+    bookButton.addEventListener('click', bookTicket);
+  </script>
+
+</body>
+</html>
