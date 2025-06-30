@@ -1,171 +1,177 @@
 <!DOCTYPE html>
-<html lang="my">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1"> 
-  <title>ရုပ်ရှင်လက်မှတ်မှာရန်</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ticket System</title>
   <style>
     body {
-      font-family: "Noto Sans Myanmar", sans-serif;
-      background: #f7f7f7;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
       margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .page {
+      display: none;
       padding: 20px;
-    }
-
-    .ticket-container {
-      max-width: 500px;
-      background: white;
-      padding: 25px;
-      margin: auto;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-
-    h2, p {
+      max-width: 800px;
+      width: 100%;
+      background: #fff;
       text-align: center;
-      margin-bottom: 15px;
     }
-
-    .movie-info {
-      background: #eee;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+    .active {
+      display: block;
     }
-
-    .seats {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin: 20px 0;
-      justify-content: center;
-    }
-
-    .seat {
-      background-color: #ddd;
-      border-radius: 6px;
-      height: 30px;
-      line-height: 30px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .seat.selected {
-      background-color: #4CAF50;
+    .btn {
+      background: #007bff;
       color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 10px 5px;
     }
-
-    .seat.sold {
-      background-color: #999;
+    .cinema-btn {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      background: #222;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 80%;
+      max-width: 400px;
+    }
+    #seat-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .seat {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      margin: 5px;
+      border-radius: 4px;
+      text-align: center;
+      line-height: 30px;
+      cursor: pointer;
+    }
+    .price-300 {
+      background: #90ee90;
+    }
+    .price-500 {
+      background: #add8e6;
+    }
+    .price-800 {
+      background: #dda0dd;
+    }
+    .selected {
+      border: 2px solid #000;
+    }
+    .sold {
+      background: #999;
       cursor: not-allowed;
     }
-
-    .price {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .book-btn {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      background: #2196F3;
-      color: white;
-      font-size: 16px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .book-btn:hover {
-      background: #1976D2;
-    }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <div class="ticket-container" id="bookingPage">
-    <h2>🎬 ရုပ်ရှင်လက်မှတ်မှာရန်</h2>
+<div class="page active" id="intro">
+  <h1>What happened to the wolf?</h1>
+  <img src="https://via.placeholder.com/300x450" alt="Poster" style="max-width: 100%;" />
+  <p>Showing in: Bangkok, Chiang Mai, Mae Sot</p>
+  <button class="btn" onclick="nextPage('cinema')">Buy Tickets</button>
+</div>
 
-    <div class="movie-info">
-      <p><strong>ရုပ်ရှင်:</strong> What Happened to the Wolf?</p>
-      <p><strong>အချိန်:</strong> 7:00 PM</p>
-      <p><strong>Cinema:</strong> SF Cinema, Chaing Mai, Thailand</p>
-    </div>
+<div class="page" id="cinema">
+  <h2>Select Cinema</h2>
+  <div class="cinema-btn" onclick="loadSeats('maesot')">SF CINEMA (MAE SOT)</div>
+  <div class="cinema-btn" onclick="loadSeats('chiangmai')">SFX CINEMA (MAYA CHIANGMAI)</div>
+  <div class="cinema-btn" onclick="loadSeats('mbk')">SF CINEMA (MBK CENTER)</div>
+</div>
 
-    <p>🪑 ထိုင်ခုံရွေးချယ်ပါ</p>
-    <div class="seats" id="seatContainer">
-      <!-- Seats will be added by JS -->
-    </div>
+<div class="page" id="seating">
+  <h2>Seating Plan</h2>
+  <div id="seat-container"></div>
+  <button class="btn" onclick="nextPage('payment')">Confirm</button>
+</div>
 
-    <p class="price">💰 Seat - 300 THB</p>
-    <button class="book-btn" id="bookButton">မှာယူမည်</button>
-  </div>
+<div class="page" id="payment">
+  <h2>Payment Info</h2>
+  <p id="selected-info"></p>
+  <p id="total-amount"></p>
+  <button class="btn" onclick="redirectMessenger()">Pay</button>
+</div>
 
-  <div class="ticket-container" id="ticketPage" style="display: none;">
-    <h3 style="text-align: center;">🎟️ E-TICKET</h3>
-    <p><strong>ရုပ်ရှင်:</strong> What happened to the Wolf?</p>
-    <p><strong>အချိန်:</strong> 7:00 PM, June 1, 2025</p>
-    <p><strong>Cinema:</strong> SF Cinema Mandalay</p>
-    <p><strong>ထိုင်ခုံ:</strong> <span id="seatDisplay"></span></p>
-    <p><strong>လက်မှတ် ID:</strong> <span id="ticketID"></span></p>
-    <div style="text-align:center;">
-      <img id="qrImage" src="" alt="QR Code">
-    </div>
-    <p style="text-align:center; font-size:12px; color:#555; margin-top:10px;">
-      ရုပ်ရှင်ရုံဝင်ရန်အတွက် ဤလက်မှတ်ကို ပြပါရန်လိုအပ်ပါသည်။<br>
-      လာရောက်အားပေးသည့်အတွက် ကျေးဇူးတင်ပါသည် 🎬
-    </p>
-  </div>
+<script>
+  const seatData = {
+    maesot: generateSeats(4, 5),
+    chiangmai: generateSeats(5, 6),
+    mbk: generateSeats(6, 6)
+  };
+  let selectedSeats = [];
+  let selectedCinema = "";
 
-  <script>
-    const seatContainer = document.getElementById('seatContainer');
-    const bookButton = document.getElementById('bookButton');
-    const bookingPage = document.getElementById('bookingPage');
-    const ticketPage = document.getElementById('ticketPage');
-    const seatDisplay = document.getElementById('seatDisplay');
-    const ticketIDDisplay = document.getElementById('ticketID');
-    const qrImage = document.getElementById('qrImage');
+  function nextPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+  }
 
-    const soldSeats = ['B2', 'C3'];
+  function loadSeats(cinema) {
+    selectedCinema = cinema;
+    selectedSeats = [];
+    const container = document.getElementById('seat-container');
+    container.innerHTML = "";
+    seatData[cinema].forEach(seat => {
+      const seatDiv = document.createElement('div');
+      seatDiv.className = `seat price-${seat.price} ` + (seat.sold ? 'sold' : '');
+      seatDiv.textContent = seat.label;
+      seatDiv.onclick = function() {
+        if (seat.sold) return;
+        seat.selected = !seat.selected;
+        if (seat.selected) {
+          seatDiv.classList.add('selected');
+          selectedSeats.push(seat);
+        } else {
+          seatDiv.classList.remove('selected');
+          selectedSeats = selectedSeats.filter(s => s.label !== seat.label);
+        }
+      };
+      container.appendChild(seatDiv);
+    });
+    nextPage('seating');
+  }
 
-    for (let row of ['A','B','C','D']) {
-      for (let i = 1; i <= 5; i++) {
-        const seat = document.createElement('div');
-        const seatId = row + i;
-        seat.textContent = seatId;
-        seat.classList.add('seat');
-        if (soldSeats.includes(seatId)) seat.classList.add('sold');
-        seat.onclick = () => {
-          if (!seat.classList.contains('sold')) {
-            seat.classList.toggle('selected');
-          }
-        };
-        seatContainer.appendChild(seat);
+  function generateSeats(rows, cols) {
+    let seats = [];
+    let price;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 1; c <= cols; c++) {
+        if (r < 1) price = 300;
+        else if (r < rows - 1) price = 500;
+        else price = 800;
+        seats.push({ label: String.fromCharCode(65 + r) + c, price: price, sold: false });
       }
     }
+    return seats;
+  }
 
-    function bookTicket() {
-      const selectedSeats = Array.from(document.querySelectorAll('.seat.selected')).map(s => s.textContent);
-      if (selectedSeats.length === 0) {
-        alert('ကျေးဇူးပြု၍ ထိုင်ခုံရွေးချယ်ပါ။');
-        return;
-      }
-      const ticketID = 'TKT-' + Math.random().toString(36).substr(2, 8).toUpperCase();
-      const seat = selectedSeats.join(', ');
-      const qrLink = `https://api.qrserver.com/v1/create-qr-code/?data=${ticketID}&size=120x120`;
-
-      seatDisplay.textContent = seat;
-      ticketIDDisplay.textContent = ticketID;
-      qrImage.src = qrLink;
-
-      bookingPage.style.display = 'none';
-      ticketPage.style.display = 'block';
-    }
-
-    bookButton.addEventListener('click', bookTicket);
-  </script>
+  function redirectMessenger() {
+    const info = selectedSeats.map(s => s.label).join(", ");
+    const total = selectedSeats.reduce((sum, s) => sum + s.price, 0);
+    document.getElementById('selected-info').textContent = `Seats: ${info}`;
+    document.getElementById('total-amount').textContent = `Total: ${total} Baht`;
+    // simulate redirect after 2s
+    setTimeout(() => {
+      window.location.href = 'https://m.me/your_facebook_page';
+    }, 2000);
+  }
+</script>
 
 </body>
 </html>
