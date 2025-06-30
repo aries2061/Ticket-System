@@ -11,8 +11,10 @@
       margin: 0;
       padding: 0;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
+      flex-direction: column;
+      min-height: 100vh;
     }
     .page {
       display: none;
@@ -21,6 +23,8 @@
       width: 100%;
       background: #fff;
       text-align: center;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
     }
     .active {
       display: block;
@@ -83,7 +87,7 @@
 
 <div class="page active" id="intro">
   <h1>What happened to the wolf?</h1>
-  <img src="https://raw.githubusercontent.com/Khunnaingpyaehtun/Ticket-System/main/Poster%20(2).jpg" alt="Poster">
+  <img src="https://raw.githubusercontent.com/Khunnaingpyaehtun/Ticket-System/main/Poster%20(2).jpg" alt="Poster" style="max-width: 100%; border-radius: 10px;" />
   <p>Showing in: Bangkok, Chiang Mai, Mae Sot</p>
   <button class="btn" onclick="nextPage('cinema')">Buy Tickets</button>
 </div>
@@ -105,6 +109,10 @@
   <h2>Payment Info</h2>
   <p id="selected-info"></p>
   <p id="total-amount"></p>
+  <p id="datetime-info"></p>
+  <p id="cinema-time-info"></p>
+  <p id="countdown" style="font-weight: bold; color: red;"></p>
+  <p style="color: red; font-weight: bold;">Please complete the payment within 15 minutes.</p>
   <button class="btn" onclick="redirectMessenger()">Pay</button>
 </div>
 
@@ -116,10 +124,58 @@
   };
   let selectedSeats = [];
   let selectedCinema = "";
+  let countdownTimer;
+  let countdownTime = 15 * 60; // 15 minutes in seconds
 
   function nextPage(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
+
+    if (pageId === 'payment') {
+      const info = selectedSeats.map(s => s.label).join(", ");
+      const total = selectedSeats.reduce((sum, s) => sum + s.price, 0);
+      const now = new Date();
+      const dateStr = now.toLocaleDateString();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      let showTime = "";
+      if (selectedCinema === "maesot") {
+        showTime = "SF CINEMA (MAE SOT) - 19/7/2025, 3:00 PM";
+      } else if (selectedCinema === "chiangmai") {
+        showTime = "SFX CINEMA (MAYA CHIANGMAI) - 19/7/2025, 6:00 PM";
+      } else if (selectedCinema === "mbk") {
+        showTime = "SF CINEMA (MBK CENTER) - 19/7/2025, 4:00 PM";
+      }
+
+      document.getElementById('selected-info').textContent = `Seats: ${info}`;
+      document.getElementById('total-amount').textContent = `Total: ${total} Baht`;
+      document.getElementById('datetime-info').textContent = `Booking Time: ${dateStr} ${timeStr}`;
+      document.getElementById('cinema-time-info').textContent = `Showtime: ${showTime}`;
+
+      startCountdown();
+    } else {
+      clearInterval(countdownTimer);
+    }
+  }
+
+  function startCountdown() {
+    countdownTime = 15 * 60;
+    updateCountdown();
+    countdownTimer = setInterval(() => {
+      countdownTime--;
+      updateCountdown();
+      if (countdownTime <= 0) {
+        clearInterval(countdownTimer);
+        alert("⏰ Time expired. Please start again.");
+        location.reload();
+      }
+    }, 1000);
+  }
+
+  function updateCountdown() {
+    const minutes = Math.floor(countdownTime / 60);
+    const seconds = countdownTime % 60;
+    document.getElementById('countdown').textContent = `Time Left: ${minutes}:${seconds.toString().padStart(2, '0')}`;
   }
 
   function loadSeats(cinema) {
@@ -162,11 +218,7 @@
   }
 
   function redirectMessenger() {
-    const info = selectedSeats.map(s => s.label).join(", ");
-    const total = selectedSeats.reduce((sum, s) => sum + s.price, 0);
-    document.getElementById('selected-info').textContent = `Seats: ${info}`;
-    document.getElementById('total-amount').textContent = `Total: ${total} Baht`;
-    // simulate redirect after 2s
+    clearInterval(countdownTimer);
     setTimeout(() => {
       window.location.href = 'https://m.me/@khunnaing.pyaehtun';
     }, 2000);
