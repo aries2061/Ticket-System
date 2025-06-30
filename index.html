@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Ticket System</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
@@ -91,11 +92,11 @@
             transform: translateY(-2px);
         }
          .btn-secondary {
-            background-color: #4B5563;
+            background-color: #6B7280;
             color: white;
         }
         .btn-secondary:hover {
-            background-color: #374151;
+            background-color: #4B5563;
         }
     </style>
 </head>
@@ -103,11 +104,10 @@
 
     <div id="app-container" class="max-w-5xl mx-auto p-4 sm:p-6">
 
-        <!-- Page 1: Intro -->
         <div id="introPage" class="page active">
             <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
                 <h1 class="text-4xl font-bold mb-4">What happened to the wolf?</h1>
-               <img src="https://raw.githubusercontent.com/Khunnaingpyaehtun/Ticket-System/main/Poste.jpg" alt="Poster"> 
+                <img src="https://raw.githubusercontent.com/Khunnaingpyaehtun/Ticket-System/main/Poster%20(2).jpg" 
                      onerror="this.onerror=null;this.src='https://placehold.co/600x400/1f2937/ffffff?text=Poster%20Not%20Found';"
                      alt="Movie Poster" class="w-full max-w-md mx-auto rounded-lg mb-6 shadow-md">
                 <div class="mb-6">
@@ -122,7 +122,6 @@
             </div>
         </div>
 
-        <!-- Page 2: Cinema Information -->
         <div id="cinemaSelectionPage" class="page">
              <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
                 <h1 class="text-3xl font-bold mb-6">ရုပ်ရှင်ရုံ ရွေးချယ်ပါ</h1>
@@ -134,7 +133,6 @@
             </div>
         </div>
 
-        <!-- Page 3: Seating Plan -->
         <div id="seatingPlanPage" class="page">
             <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
                 <h1 id="cinemaName" class="text-3xl font-bold text-center mb-2"></h1>
@@ -162,7 +160,6 @@
             </div>
         </div>
 
-        <!-- Page 4: Payment -->
         <div id="paymentPage" class="page">
             <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
                 <h1 class="text-3xl font-bold mb-6">အတည်ပြုခြင်းနှင့် ငွေပေးချေခြင်း</h1>
@@ -177,7 +174,15 @@
                     <p id="countdownMessage" class="text-red-400 font-bold text-lg">ငွေပေးချေမှုကို ၁၅ မိနစ်အတွင်း အပြီးဆောင်ရွက်ပါ။</p>
                     <p id="countdownTimer" class="text-2xl font-bold text-red-500 my-2"></p>
                 </div>
-                <a id="paymentLink" href="#" target="_blank" class="btn btn-primary mt-4 text-xl">Pay</a>
+                <div class="flex justify-center items-center gap-4 mt-4">
+                     <a id="paymentLink" href="#" target="_blank" class="btn btn-primary text-xl">Pay</a>
+                </div>
+               
+                <div class="mt-8 border-t border-gray-700 pt-6">
+                    <h2 class="text-xl font-semibold mb-4">သင်၏ Booking QR Code</h2>
+                    <canvas id="qrCanvas" class="mx-auto bg-white p-2 rounded-lg shadow-md"></canvas>
+                    <a id="downloadQRBtn" class="btn btn-secondary mt-4 inline-block">Download QR Code</a>
+                </div>
             </div>
         </div>
     </div>
@@ -392,19 +397,46 @@
             function showPaymentPage() {
                 if(selectedSeats.length === 0) return;
                 
-                document.getElementById('paymentCinemaName').textContent = selectedCinema.name;
-                document.getElementById('paymentCinemaTime').textContent = selectedCinema.time;
-                document.getElementById('paymentSelectedSeats').textContent = selectedSeats.map(s => s.id).sort().join(', ');
-                document.getElementById('paymentTotalPrice').textContent = `${totalPrice} Baht`;
+                const cinemaNameEl = document.getElementById('paymentCinemaName');
+                const cinemaTimeEl = document.getElementById('paymentCinemaTime');
+                const selectedSeatsEl = document.getElementById('paymentSelectedSeats');
+                const totalPriceEl = document.getElementById('paymentTotalPrice');
+                const bookingTimeEl = document.getElementById('bookingTime');
                 
+                const sortedSeats = selectedSeats.map(s => s.id).sort().join(', ');
                 const now = new Date();
-                document.getElementById('bookingTime').textContent = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                const bookingTimeText = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
-                // Using user's provided messenger link
+                cinemaNameEl.textContent = selectedCinema.name;
+                cinemaTimeEl.textContent = selectedCinema.time;
+                selectedSeatsEl.textContent = sortedSeats;
+                totalPriceEl.textContent = `${totalPrice} Baht`;
+                bookingTimeEl.textContent = bookingTimeText;
+
                 paymentLink.href = 'https://m.me/24framesmozart';
 
                 navigateTo('paymentPage');
                 startCountdown();
+                generateAndSetupQRCode(sortedSeats, bookingTimeText);
+            }
+
+            function generateAndSetupQRCode(sortedSeats, bookingTimeText) {
+                const canvas = document.getElementById('qrCanvas');
+                const downloadBtn = document.getElementById('downloadQRBtn');
+
+                const qrText = `Movie: What happened to the wolf?\nCinema: ${selectedCinema.name}\nShowtime: ${selectedCinema.time}\nSeats: ${sortedSeats}\nTotal: ${totalPrice} Baht\nBooking Time: ${bookingTimeText}`;
+
+                QRCode.toCanvas(canvas, qrText, { width: 220, margin: 2 }, function (error) {
+                    if (error) {
+                        console.error(error);
+                        canvas.style.display = 'none';
+                        downloadBtn.style.display = 'none';
+                        return;
+                    }
+                    console.log('QR code generated successfully!');
+                    downloadBtn.href = canvas.toDataURL('image/png');
+                    downloadBtn.download = `what-happened-to-the-wolf-booking.png`;
+                });
             }
 
             // Event Listeners
