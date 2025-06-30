@@ -49,17 +49,23 @@
       width: 80%;
       max-width: 400px;
     }
-    #seat-container {
+    .seat-row {
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 10px;
       justify-content: center;
-      margin-top: 20px;
+    }
+    .row-label {
+      width: 60px;
+      text-align: right;
+      margin-right: 10px;
+      font-weight: bold;
     }
     .seat {
       display: inline-block;
       width: 30px;
       height: 30px;
-      margin: 5px;
+      margin: 3px;
       border-radius: 4px;
       text-align: center;
       line-height: 30px;
@@ -118,14 +124,81 @@
 
 <script>
   const seatData = {
-    maesot: generateSeats(4, 5),
-    chiangmai: generateSeats(5, 6),
-    mbk: generateSeats(6, 6)
+    maesot: generateSeats("maesot"),
+    chiangmai: generateSeats("chiangmai"),
+    mbk: generateSeats("mbk")
   };
+
+  function generateSeats(cinema) {
+    const layout = {
+      maesot: {
+        AA: [1, 2],
+        A: [...Array(16).keys()].map(i => i + 1),
+        B: [...Array(16).keys()].map(i => i + 1),
+        C: [...Array(16).keys()].map(i => i + 1),
+        D: [...Array(14).keys()].map(i => i + 1),
+        E: [...Array(14).keys()].map(i => i + 1),
+        F: [...Array(15).keys()].map(i => i + 1),
+        G: [...Array(16).keys()].map(i => i + 1),
+        H: [...Array(16).keys()].map(i => i + 1),
+        J: [...Array(20).keys()].map(i => i + 1),
+        K: [...Array(18).keys()].map(i => i + 1),
+        L: [...Array(17).keys()].map(i => i + 1),
+        M: [...Array(16).keys()].map(i => i + 1)
+      },
+      chiangmai: {
+        AA: [...Array(8).keys()].map(i => i + 1),
+        A: [...Array(20).keys()].map(i => i + 1),
+        B: [...Array(20).keys()].map(i => i + 1),
+        C: [...Array(20).keys()].map(i => i + 1),
+        D: [...Array(24).keys()].map(i => i + 1),
+        E: [...Array(24).keys()].map(i => i + 1),
+        F: [...Array(24).keys()].map(i => i + 1),
+        G: [...Array(24).keys()].map(i => i + 1),
+        H: [...Array(24).keys()].map(i => i + 1),
+        J: [...Array(24).keys()].map(i => i + 1),
+        K: [...Array(24).keys()].map(i => i + 1),
+        L: [...Array(24).keys()].map(i => i + 1),
+        M: [...Array(24).keys()].map(i => i + 1),
+        N: [...Array(24).keys()].map(i => i + 1)
+      },
+      mbk: {
+        AA: [...Array(4).keys()].map(i => i + 1),
+        A: [...Array(15).keys()].map(i => i + 1),
+        B: [...Array(15).keys()].map(i => i + 1),
+        C: [...Array(15).keys()].map(i => i + 1),
+        D: [...Array(20).keys()].map(i => i + 1),
+        E: [...Array(20).keys()].map(i => i + 1),
+        F: [...Array(20).keys()].map(i => i + 1),
+        G: [...Array(20).keys()].map(i => i + 1),
+        H: [...Array(20).keys()].map(i => i + 1),
+        J: [...Array(20).keys()].map(i => i + 1),
+        K: [...Array(20).keys()].map(i => i + 1),
+        L: [...Array(20).keys()].map(i => i + 1),
+        M: [...Array(20).keys()].map(i => i + 1),
+        N: [...Array(20).keys()].map(i => i + 1),
+        P: [...Array(20).keys()].map(i => i + 1)
+      }
+    };
+
+    const rows = layout[cinema];
+    const seats = [];
+    for (const row in rows) {
+      const numbers = rows[row];
+      numbers.forEach(num => {
+        let price = 500;
+        if (row === "AA" || row === "D") price = 800;
+        else if (["A", "B", "C"].includes(row)) price = 300;
+        seats.push({ label: `${row}${num}`, price: price, sold: false });
+      });
+    }
+    return seats;
+  }
+
   let selectedSeats = [];
   let selectedCinema = "";
   let countdownTimer;
-  let countdownTime = 15 * 60; // 15 minutes in seconds
+  let countdownTime = 15 * 60;
 
   function nextPage(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -139,13 +212,9 @@
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
       let showTime = "";
-      if (selectedCinema === "maesot") {
-        showTime = "SF CINEMA (MAE SOT) - 19/7/2025, 3:00 PM";
-      } else if (selectedCinema === "chiangmai") {
-        showTime = "SFX CINEMA (MAYA CHIANGMAI) - 19/7/2025, 6:00 PM";
-      } else if (selectedCinema === "mbk") {
-        showTime = "SF CINEMA (MBK CENTER) - 19/7/2025, 4:00 PM";
-      }
+      if (selectedCinema === "maesot") showTime = "SF CINEMA (MAE SOT) - 19/7/2025, 3:00 PM";
+      else if (selectedCinema === "chiangmai") showTime = "SFX CINEMA (MAYA CHIANGMAI) - 19/7/2025, 6:00 PM";
+      else if (selectedCinema === "mbk") showTime = "SF CINEMA (MBK CENTER) - 19/7/2025, 4:00 PM";
 
       document.getElementById('selected-info').textContent = `Seats: ${info}`;
       document.getElementById('total-amount').textContent = `Total: ${total} Baht`;
@@ -156,6 +225,47 @@
     } else {
       clearInterval(countdownTimer);
     }
+  }
+
+  function loadSeats(cinema) {
+    selectedCinema = cinema;
+    selectedSeats = [];
+    const container = document.getElementById('seat-container');
+    container.innerHTML = "";
+
+    const grouped = seatData[cinema].reduce((acc, seat) => {
+      const row = seat.label.match(/^[A-Z]+/)[0];
+      if (!acc[row]) acc[row] = [];
+      acc[row].push(seat);
+      return acc;
+    }, {});
+
+    Object.keys(grouped).forEach(row => {
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'seat-row';
+      const rowLabel = document.createElement('div');
+      rowLabel.className = 'row-label';
+      rowLabel.textContent = `Row ${row}`;
+      rowDiv.appendChild(rowLabel);
+
+      grouped[row].forEach(seat => {
+        const seatDiv = document.createElement('div');
+        seatDiv.className = `seat price-${seat.price}` + (seat.sold ? ' sold' : '');
+        seatDiv.textContent = seat.label.replace(/^[A-Z]+/, '');
+        seatDiv.onclick = function () {
+          if (seat.sold) return;
+          seat.selected = !seat.selected;
+          seatDiv.classList.toggle('selected');
+          if (seat.selected) selectedSeats.push(seat);
+          else selectedSeats = selectedSeats.filter(s => s.label !== seat.label);
+        };
+        rowDiv.appendChild(seatDiv);
+      });
+
+      container.appendChild(rowDiv);
+    });
+
+    nextPage('seating');
   }
 
   function startCountdown() {
@@ -176,45 +286,6 @@
     const minutes = Math.floor(countdownTime / 60);
     const seconds = countdownTime % 60;
     document.getElementById('countdown').textContent = `Time Left: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-  }
-
-  function loadSeats(cinema) {
-    selectedCinema = cinema;
-    selectedSeats = [];
-    const container = document.getElementById('seat-container');
-    container.innerHTML = "";
-    seatData[cinema].forEach(seat => {
-      const seatDiv = document.createElement('div');
-      seatDiv.className = `seat price-${seat.price} ` + (seat.sold ? 'sold' : '');
-      seatDiv.textContent = seat.label;
-      seatDiv.onclick = function() {
-        if (seat.sold) return;
-        seat.selected = !seat.selected;
-        if (seat.selected) {
-          seatDiv.classList.add('selected');
-          selectedSeats.push(seat);
-        } else {
-          seatDiv.classList.remove('selected');
-          selectedSeats = selectedSeats.filter(s => s.label !== seat.label);
-        }
-      };
-      container.appendChild(seatDiv);
-    });
-    nextPage('seating');
-  }
-
-  function generateSeats(rows, cols) {
-    let seats = [];
-    let price;
-    for (let r = 0; r < rows; r++) {
-      for (let c = 1; c <= cols; c++) {
-        if (r < 1) price = 300;
-        else if (r < rows - 1) price = 500;
-        else price = 800;
-        seats.push({ label: String.fromCharCode(65 + r) + c, price: price, sold: false });
-      }
-    }
-    return seats;
   }
 
   function redirectMessenger() {
