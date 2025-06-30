@@ -31,6 +31,7 @@
             align-items: center;
             justify-content: center;
             font-size: 12px;
+            font-weight: 500;
             transition: transform 0.2s, background-color 0.2s;
             flex-shrink: 0;
         }
@@ -41,10 +42,10 @@
         .seat:not(.sold):not(.space):hover {
             transform: scale(1.1);
         }
-        /* Price-based colors, mapped from PDF (Deluxe/Premium -> 300, Prime/Premium -> 500, Sofa/Suite -> 800) */
-        .seat.price-300 { background-color: #34D399; color: #064E3B; } /* Green - Deluxe/Premium */
-        .seat.price-500 { background-color: #60A5FA; color: #1E3A8A; } /* Blue - Premium/Prime */
-        .seat.price-800 { background-color: #F472B6; color: #831843; } /* Pink - Sofa/Suite */
+        /* Price-based colors */
+        .seat.price-300 { background-color: #34D399; color: #064E3B; } /* Green */
+        .seat.price-500 { background-color: #60A5FA; color: #1E3A8A; } /* Blue */
+        .seat.price-800 { background-color: #F472B6; color: #831843; } /* Pink */
 
         .seat.selected { background-color: #FBBF24; color: #78350F; font-weight: bold; } /* Amber */
         .seat.sold { background-color: #4B5563; cursor: not-allowed; } /* Gray */
@@ -98,16 +99,75 @@
         .btn-secondary:hover {
             background-color: #4B5563;
         }
+        .btn-back {
+            padding: 8px 16px;
+        }
+        
+        /* Responsive styles for mobile */
+        @media (max-width: 640px) {
+            .seat {
+                width: 24px;
+                height: 24px;
+                margin: 2px;
+                font-size: 10px;
+            }
+            .seat.price-800 {
+                width: 28px;
+            }
+            .row-label {
+                width: 30px;
+                margin-right: 5px;
+                font-size: 0.8rem;
+            }
+            h1 {
+                font-size: 1.5rem !important; /* using !important to override tailwind */
+            }
+        }
+
+        @media (max-width: 420px) {
+             .seat {
+                width: 20px;
+                height: 20px;
+                margin: 2px;
+                font-size: 9px;
+            }
+            .seat.price-800 {
+                width: 24px;
+            }
+            .row-label {
+                width: 25px;
+                margin-right: 4px;
+            }
+        }
+        
+        @media (max-width: 375px) {
+             .seat {
+                width: 18px;
+                height: 18px;
+                margin: 1px;
+                font-size: 8px;
+                border-radius: 4px;
+            }
+            .seat.price-800 {
+                width: 22px;
+            }
+            .row-label {
+                width: 22px;
+                font-size: 0.7rem;
+            }
+        }
+
     </style>
 </head>
 <body class="antialiased">
 
-    <div id="app-container" class="max-w-5xl mx-auto p-4 sm:p-6">
+    <div id="app-container" class="max-w-5xl mx-auto p-2 sm:p-6">
 
+        <!-- Page 1: Intro -->
         <div id="introPage" class="page active">
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
+            <div class="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg text-center">
                 <h1 class="text-4xl font-bold mb-4">What happened to the wolf?</h1>
-                <img src="https://i.postimg.cc/5tVCMdfV/IMG-0664.jpg" 
+                <img src="https://i.ibb.co/L5wVbHV/Poster-2.jpg" 
                      onerror="this.onerror=null;this.src='https://placehold.co/600x400/1f2937/ffffff?text=Poster%20Not%20Found';"
                      alt="Movie Poster" class="w-full max-w-md mx-auto rounded-lg mb-6 shadow-md">
                 <div class="mb-6">
@@ -122,9 +182,13 @@
             </div>
         </div>
 
+        <!-- Page 2: Cinema Information -->
         <div id="cinemaSelectionPage" class="page">
-             <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-                <h1 class="text-3xl font-bold mb-6">ရုပ်ရှင်ရုံ ရွေးချယ်ပါ</h1>
+             <div class="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg text-center relative">
+                <div class="absolute top-4 left-4">
+                    <button id="backToIntroBtn" class="btn btn-secondary btn-back">&lt; နောက်သို့</button>
+                </div>
+                <h1 class="text-3xl font-bold mb-6 pt-8">ရုပ်ရှင်ရုံ ရွေးချယ်ပါ</h1>
                 <div class="space-y-4">
                     <button class="btn btn-secondary w-full text-lg" data-cinema="maesot">SF CINEMA (MAE SOT)</button>
                     <button class="btn btn-secondary w-full text-lg" data-cinema="chiangmai">SFX CINEMA (MAYA CHIANGMAI)</button>
@@ -133,9 +197,13 @@
             </div>
         </div>
 
+        <!-- Page 3: Seating Plan -->
         <div id="seatingPlanPage" class="page">
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h1 id="cinemaName" class="text-3xl font-bold text-center mb-2"></h1>
+            <div class="bg-gray-800 p-2 sm:p-4 md:p-6 rounded-lg shadow-lg relative">
+                <div class="absolute top-4 left-4 z-10">
+                    <button id="backToCinemaBtn" class="btn btn-secondary btn-back">&lt; နောက်သို့</button>
+                </div>
+                <h1 id="cinemaName" class="text-3xl font-bold text-center mb-2 pt-8"></h1>
                 <p id="cinemaTime" class="text-center text-gray-400 mb-4"></p>
                 
                 <div class="screen">SCREEN</div>
@@ -144,7 +212,7 @@
                 </div>
 
 
-                <div class="flex flex-wrap justify-center gap-4 my-6">
+                <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 my-6">
                     <div class="flex items-center"><div class="seat price-300 !m-0"></div><span class="ml-2">300 Baht</span></div>
                     <div class="flex items-center"><div class="seat price-500 !m-0"></div><span class="ml-2">500 Baht</span></div>
                     <div class="flex items-center"><div class="seat price-800 !m-0"></div><span class="ml-2">800 Baht</span></div>
@@ -153,16 +221,20 @@
                 </div>
 
                 <div class="text-center mt-6 bg-gray-900 p-4 rounded-lg">
-                    <p class="text-xl">ရွေးချယ်ထားသောခုံများ: <span id="selectedSeatsInfo" class="font-bold text-amber-400">-</span></p>
-                    <p class="text-2xl mt-2">စုစုပေါင်းကျသင့်ငွေ: <span id="totalPriceInfo" class="font-bold text-green-400">0 Baht</span></p>
+                    <p class="text-lg md:text-xl">ရွေးချယ်ထားသောခုံများ: <span id="selectedSeatsInfo" class="font-bold text-amber-400">-</span></p>
+                    <p class="text-xl md:text-2xl mt-2">စုစုပေါင်းကျသင့်ငွေ: <span id="totalPriceInfo" class="font-bold text-green-400">0 Baht</span></p>
                     <button id="confirmBookingBtn" class="btn btn-primary mt-4 text-lg">Confirm</button>
                 </div>
             </div>
         </div>
 
+        <!-- Page 4: Payment -->
         <div id="paymentPage" class="page">
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-                <h1 class="text-3xl font-bold mb-6">အတည်ပြုခြင်းနှင့် ငွေပေးချေခြင်း</h1>
+            <div class="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg text-center relative">
+                <div class="absolute top-4 left-4">
+                    <button id="backToSeatingBtn" class="btn btn-secondary btn-back">&lt; နောက်သို့</button>
+                </div>
+                <h1 class="text-3xl font-bold mb-6 pt-8">အတည်ပြုခြင်းနှင့် ငွေပေးချေခြင်း</h1>
                 <div class="text-left bg-gray-700 p-4 rounded-lg space-y-3">
                     <p><strong>ရုပ်ရှင်ရုံ:</strong> <span id="paymentCinemaName"></span></p>
                     <p><strong>ပြသချိန်:</strong> <span id="paymentCinemaTime"></span></p>
@@ -195,64 +267,69 @@
             const confirmBookingBtn = document.getElementById('confirmBookingBtn');
             const paymentLink = document.getElementById('paymentLink');
 
+            // Back buttons
+            const backToIntroBtn = document.getElementById('backToIntroBtn');
+            const backToCinemaBtn = document.getElementById('backToCinemaBtn');
+            const backToSeatingBtn = document.getElementById('backToSeatingBtn');
+
             let selectedCinema = {};
             let selectedSeats = [];
             let totalPrice = 0;
             let countdownInterval;
             const COUNTDOWN_SECONDS = 15 * 60;
 
-            // Layouts updated based on the provided PDF files.
+            // Using a reliable image hosting link for the poster
+            document.querySelector('#introPage img').src = 'https://i.ibb.co/L5wVbHV/Poster-2.jpg';
+
+            // FINAL CORRECTED LAYOUTS based on meticulous PDF re-evaluation
             // s=sofa/suite(800), p=premium/prime(500), n=normal/deluxe(300), x=sold, _=space
             const cinemaData = {
-                'maesot': {
+                 'maesot': {
                     name: 'SF CINEMA (MAE SOT)',
                     time: '၁၉/၇/၂၀၂၅ ညနေ ၃:၀၀',
-                    // Mapping: Deluxe -> n, Premium -> p, Sofa -> s
                     prices: { n: 300, p: 500, s: 800 },
                     rowLabels: ["M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"],
                     layout: [
-                        "nnnnnnnnnnnnnnnn",        // M: 16
-                        "nnnnnnnnnnnnnnnnn",       // L: 17
-                        "nnnnnnnnnnnnnnnnnnn",     // K: 19
-                        "nnnnnnnnnnnnnnnnnnn",     // J: 19
-                        "nnnnnnnnnnnnnnnnnnn",     // H: 19
-                        "nnnnnnnnnnnnnnnnnnn",     // G: 19
-                        "nnnnnnnn_nnnnnnnnnn",     // F: 18 (gap)
-                        "nnnnnnnnnnnnnnnnnnn",     // E: 19
-                        "_pppppp_ppppppppppp",     // D: 19 (gaps, premium)
-                        "_ppppp_pppppppppppp",     // C: 19 (gaps, premium)
-                        "_ppppppppppppppppppp",    // B: 20 (gap, premium)
-                        "_ppppppppppppppppppp",    // A: 20 (gap, premium)
-                        "__s_s_s_ssss__",          // AA: 9 (gaps, sofa)
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // M: 22
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // L: 22
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // K: 22
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // J: 22
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // H: 22
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // G: 22
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // F: 22
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // E: 22
+                        "ppp_pppppppppppppppp_ppp",   // D: 22
+                        "ppp_pppppppppppppppp_ppp",   // C: 22
+                        "ppp_pppppppppppppppp_ppp",   // B: 22
+                        "ppp_pppppppppppppppp_ppp",   // A: 22
+                        "sss_sssssss_sss",            // AA: 13
                     ]
                 },
                 'chiangmai': {
                     name: 'SFX CINEMA (MAYA CHIANGMAI)',
                     time: '၁၉/၇/၂၀၂၅ ညနေ ၆:၀၀',
-                    // Mapping: Deluxe -> n, Premium -> p, Sofa -> s
                     prices: { n: 300, p: 500, s: 800 },
                     rowLabels: ["N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"],
                     layout: [
-                        "nnnnnnnnnnnn_nnnnnnnnnnnn", // N: 24
-                        "nnnnnnnnnnnn_nnnnnnnnnnnn", // M: 24
-                        "nnnnnnnnnnnn_nnnnnnnnnnnn", // L: 24
-                        "nnnnnnnnnnnn_nnnnnnnnnnnn", // K: 24
-                        "nnnnnnnnnnnn_nnnnnnnnnnnn", // J: 24
-                        "nnnnnnnnnnnn_nnnnnnnnnnnn", // H: 24
-                        "nnnnnnnnnnnn_nnnnnnnnnnnn", // G: 24
-                        "nnnnnnnnnnnn_nnnnnnnnnnnn", // F: 24
-                        "nnnnnnnnnnnn_nnnnnnnnnnnn", // E: 24
-                        "pppppppppppp_pppppppppppp", // D: 24 (premium)
-                        "pppppppppp_pp_pppppppppp",  // C: 22 (gaps, premium)
-                        "pppppppppp_pp_pppppppppp",  // B: 22 (gaps, premium)
-                        "pppppppppp_pp_pppppppppp",  // A: 22 (gaps, premium)
-                        "ss_ss_ss_ss_ss_ss",         // AA: 12 (sofa)
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // N: 24
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // M: 24
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // L: 24
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // K: 24
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // J: 24
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // H: 24
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // G: 24
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // F: 24
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // E: 24
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // D: 24
+                        "pppppppppppppppppppppp",    // C: 22
+                        "pppppppppppppppppppppp",    // B: 22
+                        "pppppppppppppppppppppp",    // A: 22
+                        "ss_ss_ss_ss_ss_ss",         // AA: 12
                     ]
                 },
                 'mbk': {
                     name: 'SF CINEMA (MBK CENTER)',
                     time: '၁၉/၇/၂၀၂၅ ညနေ ၄:၀၀',
-                    // Mapping: Premium -> n, Prime -> p, Suite -> s
                     prices: { n: 300, p: 500, s: 800 },
                     rowLabels: ["P", "N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"],
                     layout: [
@@ -265,18 +342,18 @@
                         "nnnnnnnnnn_nnnnnnnnnn", // H: 20
                         "nnnnnnnnnn_nnnnnnnnnn", // G: 20
                         "nnnnnnnnnn_nnnnnnnnnn", // F: 20
-                        "ppppppppp_ppppppppp",   // E: 18 (prime)
-                        "ppppppppp_ppppppppp",   // D: 18 (prime)
-                        "ppppppppp_ppppppppp",   // C: 18 (prime)
-                        "ppppppppp_ppppppppp",   // B: 18 (prime)
-                        "ppppppppp_ppppppppp",   // A: 18 (prime)
-                        "ssssss_ssssss",         // AA: 12 (suite)
+                        "ppppppppp_ppppppppp",   // E: 18
+                        "ppppppppp_ppppppppp",   // D: 18
+                        "ppppppppp_ppppppppp",   // C: 18
+                        "ppppppppp_ppppppppp",   // B: 18
+                        "ppppppppp_ppppppppp",   // A: 18
+                        "ssssss_ssssss",         // AA: 12
                     ]
                 }
             };
             
             function navigateTo(pageId) {
-                clearInterval(countdownInterval); // Clear timer when changing pages
+                clearInterval(countdownInterval);
                 pages.forEach(page => {
                     page.classList.remove('active');
                     if (page.id === pageId) {
@@ -390,7 +467,7 @@
                     timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
                 };
                 
-                updateTimer(); // Initial call
+                updateTimer();
                 countdownInterval = setInterval(updateTimer, 1000);
             }
             
@@ -452,8 +529,13 @@
             confirmBookingBtn.addEventListener('click', showPaymentPage);
             
             paymentLink.addEventListener('click', () => {
-                clearInterval(countdownInterval); // Stop timer when user proceeds to pay
+                clearInterval(countdownInterval);
             });
+
+            // Back Button Event Listeners
+            backToIntroBtn.addEventListener('click', () => navigateTo('introPage'));
+            backToCinemaBtn.addEventListener('click', () => navigateTo('cinemaSelectionPage'));
+            backToSeatingBtn.addEventListener('click', () => navigateTo('seatingPlanPage'));
         });
     </script>
 </body>
