@@ -35,20 +35,17 @@
             transition: transform 0.2s, background-color 0.2s;
             flex-shrink: 0;
         }
-        /* Sofa/Suite seats are usually wider */
         .seat.price-800 {
             width: 32px; 
         }
         .seat:not(.sold):not(.space):hover {
             transform: scale(1.1);
         }
-        /* Price-based colors */
-        .seat.price-300 { background-color: #34D399; color: #064E3B; } /* Green */
-        .seat.price-500 { background-color: #60A5FA; color: #1E3A8A; } /* Blue */
-        .seat.price-800 { background-color: #F472B6; color: #831843; } /* Pink */
-
-        .seat.selected { background-color: #FBBF24; color: #78350F; font-weight: bold; } /* Amber */
-        .seat.sold { background-color: #4B5563; cursor: not-allowed; } /* Gray */
+        .seat.price-300 { background-color: #34D399; color: #064E3B; }
+        .seat.price-500 { background-color: #60A5FA; color: #1E3A8A; }
+        .seat.price-800 { background-color: #F472B6; color: #831843; }
+        .seat.selected { background-color: #FBBF24; color: #78350F; font-weight: bold; }
+        .seat.sold { background-color: #4B5563; cursor: not-allowed; }
         .seat.space { background-color: transparent; cursor: default; }
 
         .seat-row {
@@ -84,102 +81,61 @@
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
         }
-        .btn-primary {
-            background-color: #3B82F6;
-            color: white;
-        }
-        .btn-primary:hover {
-            background-color: #2563EB;
-            transform: translateY(-2px);
-        }
-         .btn-secondary {
-            background-color: #6B7280;
-            color: white;
-        }
-        .btn-secondary:hover {
-            background-color: #4B5563;
-        }
-        .btn-back {
-            padding: 8px 16px;
-        }
+        .btn-primary { background-color: #3B82F6; color: white; }
+        .btn-primary:hover { background-color: #2563EB; transform: translateY(-2px); }
+        .btn-secondary { background-color: #6B7280; color: white; }
+        .btn-secondary:hover { background-color: #4B5563; }
+        .btn-back { padding: 8px 16px; }
         
-        /* Responsive styles for mobile */
+        /* --- KEY FIX FOR SCROLLING --- */
+        #seatingContainer {
+            /* This will center the seatingGrid which is now an inline-block */
+            text-align: center;
+        }
+        #seatingGrid {
+            /* This is the key fix. It forces the grid to be as wide as its content,
+               which allows the parent's overflow-x-auto to work correctly. */
+            display: inline-block;
+        }
+        /* --- END OF FIX --- */
+
         @media (max-width: 640px) {
-            .seat {
-                width: 24px;
-                height: 24px;
-                margin: 2px;
-                font-size: 10px;
-            }
-            .seat.price-800 {
-                width: 28px;
-            }
-            .row-label {
-                width: 30px;
-                margin-right: 5px;
-                font-size: 0.8rem;
-            }
-            h1 {
-                font-size: 1.5rem !important; /* using !important to override tailwind */
-            }
+            .seat { width: 24px; height: 24px; margin: 2px; font-size: 10px; }
+            .seat.price-800 { width: 28px; }
+            .row-label { width: 30px; margin-right: 5px; font-size: 0.8rem; }
         }
-
         @media (max-width: 420px) {
-             .seat {
-                width: 20px;
-                height: 20px;
-                margin: 2px;
-                font-size: 9px;
-            }
-            .seat.price-800 {
-                width: 24px;
-            }
-            .row-label {
-                width: 25px;
-                margin-right: 4px;
-            }
+             .seat { width: 22px; height: 22px; margin: 2px; font-size: 9px; }
+             .seat.price-800 { width: 26px; }
+             .row-label { width: 25px; margin-right: 4px; }
         }
-        
         @media (max-width: 375px) {
-             .seat {
-                width: 18px;
-                height: 18px;
-                margin: 1px;
-                font-size: 8px;
-                border-radius: 4px;
-            }
-            .seat.price-800 {
-                width: 22px;
-            }
-            .row-label {
-                width: 22px;
-                font-size: 0.7rem;
-            }
+             .seat { width: 20px; height: 20px; margin: 1px; font-size: 8px; border-radius: 4px; }
+             .seat.price-800 { width: 24px; }
+             .row-label { width: 22px; font-size: 0.7rem; }
         }
-
     </style>
 </head>
 <body class="antialiased">
 
-    <div id="app-container" class="max-w-5xl mx-auto p-2 sm:p-6">
+    <div id="app-container" class="max-w-5xl mx-auto p-4 sm:p-6">
 
         <!-- Page 1: Intro -->
         <div id="introPage" class="page active">
             <div class="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg text-center">
-                <h1 class="text-4xl font-bold mb-4">What happened to the wolf?</h1>
-            
+                <h1 class="text-3xl md:text-4xl font-bold mb-4">What happened to the wolf?</h1>
                 <img src="https://raw.githubusercontent.com/Khunnaingpyaehtun/Ticket-System/main/Poster.png" 
                      onerror="this.onerror=null;this.src='https://placehold.co/600x400/1f2937/ffffff?text=Poster%20Not%20Found';"
                      alt="Movie Poster" class="w-full max-w-md mx-auto rounded-lg mb-6 shadow-md">
                 <div class="mb-6">
-                    <h2 class="text-2xl font-semibold mb-2">ပြသမည့်နေရာများ</h2>
-                    <div class="flex justify-center space-x-4 text-lg">
+                    <h2 class="text-xl md:text-2xl font-semibold mb-2">ပြသမည့်နေရာများ</h2>
+                    <div class="flex justify-center space-x-4 text-base md:text-lg">
                         <span>Bangkok</span>
                         <span>Chiang Mai</span>
                         <span>Mae Sot</span>
                     </div>
                 </div>
-                <button id="buyTicketsBtn" class="btn btn-primary text-xl">Buy Tickets</button>
+                <button id="buyTicketsBtn" class="btn btn-primary text-lg md:text-xl">Buy Tickets</button>
             </div>
         </div>
 
@@ -189,11 +145,11 @@
                 <div class="absolute top-4 left-4">
                     <button id="backToIntroBtn" class="btn btn-secondary btn-back">&lt; နောက်သို့</button>
                 </div>
-                <h1 class="text-3xl font-bold mb-6 pt-8">ရုပ်ရှင်ရုံ ရွေးချယ်ပါ</h1>
+                <h1 class="text-2xl md:text-3xl font-bold mb-6 pt-8">ရုပ်ရှင်ရုံ ရွေးချယ်ပါ</h1>
                 <div class="space-y-4">
-                    <button class="btn btn-secondary w-full text-lg" data-cinema="maesot">SF CINEMA (MAE SOT)</button>
-                    <button class="btn btn-secondary w-full text-lg" data-cinema="chiangmai">SFX CINEMA (MAYA CHIANGMAI)</button>
-                    <button class="btn btn-secondary w-full text-lg" data-cinema="mbk">SF CINEMA (MBK CENTER)</button>
+                    <button class="btn btn-secondary w-full text-base md:text-lg" data-cinema="maesot">SF CINEMA (MAE SOT)</button>
+                    <button class="btn btn-secondary w-full text-base md:text-lg" data-cinema="chiangmai">SFX CINEMA (MAYA CHIANGMAI)</button>
+                    <button class="btn btn-secondary w-full text-base md:text-lg" data-cinema="mbk">SF CINEMA (MBK CENTER)</button>
                 </div>
             </div>
         </div>
@@ -204,16 +160,17 @@
                 <div class="absolute top-4 left-4 z-10">
                     <button id="backToCinemaBtn" class="btn btn-secondary btn-back">&lt; နောက်သို့</button>
                 </div>
-                <h1 id="cinemaName" class="text-3xl font-bold text-center mb-2 pt-8"></h1>
+                <h1 id="cinemaName" class="text-2xl sm:text-3xl font-bold text-center mb-2 pt-8"></h1>
                 <p id="cinemaTime" class="text-center text-gray-400 mb-4"></p>
                 
                 <div class="screen">SCREEN</div>
+                <p class="text-center text-sm text-gray-400 md:hidden my-2">ထိုင်ခုံများအားလုံးကို ကြည့်ရန် ဘယ်ညာပွတ်ဆွဲပါ</p>
+                
                 <div id="seatingContainer" class="overflow-x-auto pb-4">
-                  <div id="seatingGrid" class="flex flex-col items-center my-6"></div>
+                  <div id="seatingGrid" class="my-4"></div>
                 </div>
 
-
-                <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 my-6">
+                <div class="flex flex-wrap justify-center items-center gap-x-4 gap-y-2 my-4 text-sm sm:text-base">
                     <div class="flex items-center"><div class="seat price-300 !m-0"></div><span class="ml-2">300 Baht</span></div>
                     <div class="flex items-center"><div class="seat price-500 !m-0"></div><span class="ml-2">500 Baht</span></div>
                     <div class="flex items-center"><div class="seat price-800 !m-0"></div><span class="ml-2">800 Baht</span></div>
@@ -222,9 +179,9 @@
                 </div>
 
                 <div class="text-center mt-6 bg-gray-900 p-4 rounded-lg">
-                    <p class="text-lg md:text-xl">ရွေးချယ်ထားသောခုံများ: <span id="selectedSeatsInfo" class="font-bold text-amber-400">-</span></p>
-                    <p class="text-xl md:text-2xl mt-2">စုစုပေါင်းကျသင့်ငွေ: <span id="totalPriceInfo" class="font-bold text-green-400">0 Baht</span></p>
-                    <button id="confirmBookingBtn" class="btn btn-primary mt-4 text-lg">Confirm</button>
+                    <p class="text-base sm:text-lg md:text-xl">ရွေးချယ်ထားသောခုံများ: <span id="selectedSeatsInfo" class="font-bold text-amber-400">-</span></p>
+                    <p class="text-lg sm:text-xl md:text-2xl mt-2">စုစုပေါင်းကျသင့်ငွေ: <span id="totalPriceInfo" class="font-bold text-green-400">0 Baht</span></p>
+                    <button id="confirmBookingBtn" class="btn btn-primary mt-4 text-base md:text-lg">Confirm</button>
                 </div>
             </div>
         </div>
@@ -235,24 +192,24 @@
                 <div class="absolute top-4 left-4">
                     <button id="backToSeatingBtn" class="btn btn-secondary btn-back">&lt; နောက်သို့</button>
                 </div>
-                <h1 class="text-3xl font-bold mb-6 pt-8">အတည်ပြုခြင်းနှင့် ငွေပေးချေခြင်း</h1>
-                <div class="text-left bg-gray-700 p-4 rounded-lg space-y-3">
+                <h1 class="text-2xl md:text-3xl font-bold mb-6 pt-8">အတည်ပြုခြင်းနှင့် ငွေပေးချေခြင်း</h1>
+                <div class="text-left bg-gray-700 p-4 rounded-lg space-y-3 text-sm sm:text-base">
                     <p><strong>ရုပ်ရှင်ရုံ:</strong> <span id="paymentCinemaName"></span></p>
                     <p><strong>ပြသချိန်:</strong> <span id="paymentCinemaTime"></span></p>
                     <p><strong>ခုံနံပါတ်များ:</strong> <span id="paymentSelectedSeats" class="font-bold"></span></p>
                     <p><strong>Booking အချိန်:</strong> <span id="bookingTime"></span></p>
-                    <p class="text-2xl mt-4"><strong>စုစုပေါင်း:</strong> <span id="paymentTotalPrice" class="font-bold text-green-400"></span></p>
+                    <p class="text-xl md:text-2xl mt-4"><strong>စုစုပေါင်း:</strong> <span id="paymentTotalPrice" class="font-bold text-green-400"></span></p>
                 </div>
                 <div class="mt-6">
-                    <p id="countdownMessage" class="text-red-400 font-bold text-lg">ငွေပေးချေမှုကို ၁၅ မိနစ်အတွင်း အပြီးဆောင်ရွက်ပါ။</p>
-                    <p id="countdownTimer" class="text-2xl font-bold text-red-500 my-2"></p>
+                    <p id="countdownMessage" class="text-red-400 font-bold text-base sm:text-lg">ငွေပေးချေမှုကို ၁၅ မိနစ်အတွင်း အပြီးဆောင်ရွက်ပါ။</p>
+                    <p id="countdownTimer" class="text-xl sm:text-2xl font-bold text-red-500 my-2"></p>
                 </div>
                 <div class="flex justify-center items-center gap-4 mt-4">
-                     <a id="paymentLink" href="#" target="_blank" class="btn btn-primary text-xl">Pay</a>
+                     <a id="paymentLink" href="#" target="_blank" class="btn btn-primary text-lg md:text-xl">Pay</a>
                 </div>
                
                 <div class="mt-8 border-t border-gray-700 pt-6">
-                    <h2 class="text-xl font-semibold mb-4">သင်၏ Booking QR Code</h2>
+                    <h2 class="text-lg md:text-xl font-semibold mb-4">သင်၏ Booking QR Code</h2>
                     <canvas id="qrCanvas" class="mx-auto bg-white p-2 rounded-lg shadow-md"></canvas>
                     <a id="downloadQRBtn" class="btn btn-secondary mt-4 inline-block">Download QR Code</a>
                 </div>
@@ -279,11 +236,8 @@
             let countdownInterval;
             const COUNTDOWN_SECONDS = 15 * 60;
 
-            // Using a reliable image hosting link for the poster
             document.querySelector('#introPage img').src = 'https://raw.githubusercontent.com/Khunnaingpyaehtun/Ticket-System/main/Poster.png';
-
-            // FINAL CORRECTED LAYOUTS based on meticulous PDF re-evaluation
-            // s=sofa/suite(800), p=premium/prime(500), n=normal/deluxe(300), x=sold, _=space
+            
             const cinemaData = {
                  'maesot': {
                     name: 'SF CINEMA (MAE SOT)',
@@ -291,19 +245,19 @@
                     prices: { n: 300, p: 500, s: 800 },
                     rowLabels: ["M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"],
                     layout: [
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // M: 22
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // L: 22
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // K: 22
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // J: 22
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // H: 22
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // G: 22
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // F: 22
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // E: 22
-                        "ppp_pppppppppppppppp_ppp",   // D: 22
-                        "ppp_pppppppppppppppp_ppp",   // C: 22
-                        "ppp_pppppppppppppppp_ppp",   // B: 22
-                        "ppp_pppppppppppppppp_ppp",   // A: 22
-                        "sss_sssssss_sss",            // AA: 13
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",
+                        "nnn_nnnnnnnnnnnnnnnn_nnn",
+                        "ppp_pppppppppppppppp_ppp",
+                        "ppp_pppppppppppppppp_ppp",
+                        "ppp_pppppppppppppppp_ppp",
+                        "ppp_pppppppppppppppp_ppp",
+                        "sss_sssssss_sss",
                     ]
                 },
                 'chiangmai': {
@@ -312,20 +266,20 @@
                     prices: { n: 300, p: 500, s: 800 },
                     rowLabels: ["N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"],
                     layout: [
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // N: 24
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // M: 24
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // L: 24
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // K: 24
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // J: 24
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // H: 24
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // G: 24
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // F: 24
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // E: 24
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",  // D: 24
-                        "pppppppppppppppppppppp",    // C: 22
-                        "pppppppppppppppppppppp",    // B: 22
-                        "pppppppppppppppppppppp",    // A: 22
-                        "ss_ss_ss_ss_ss_ss",         // AA: 12
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",
+                        "nnnnnnnnnnnnnnnnnnnnnnnn",
+                        "pppppppppppppppppppppp",
+                        "pppppppppppppppppppppp",
+                        "pppppppppppppppppppppp",
+                        "ss_ss_ss_ss_ss_ss",
                     ]
                 },
                 'mbk': {
@@ -334,21 +288,21 @@
                     prices: { n: 300, p: 500, s: 800 },
                     rowLabels: ["P", "N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"],
                     layout: [
-                        "nnnnnnnnnn_nnnnnnnnnn", // P: 20
-                        "nnnnnnnnnn_nnnnnnnnnn", // N: 20
-                        "nnnnnnnnnn_nnnnnnnnnn", // M: 20
-                        "nnnnnnnnnn_nnnnnnnnnn", // L: 20
-                        "nnnnnnnnnn_nnnnnnnnnn", // K: 20
-                        "nnnnnnnnnn_nnnnnnnnnn", // J: 20
-                        "nnnnnnnnnn_nnnnnnnnnn", // H: 20
-                        "nnnnnnnnnn_nnnnnnnnnn", // G: 20
-                        "nnnnnnnnnn_nnnnnnnnnn", // F: 20
-                        "ppppppppp_ppppppppp",   // E: 18
-                        "ppppppppp_ppppppppp",   // D: 18
-                        "ppppppppp_ppppppppp",   // C: 18
-                        "ppppppppp_ppppppppp",   // B: 18
-                        "ppppppppp_ppppppppp",   // A: 18
-                        "ssssss_ssssss",         // AA: 12
+                        "nnnnnnnnnn_nnnnnnnnnn",
+                        "nnnnnnnnnn_nnnnnnnnnn",
+                        "nnnnnnnnnn_nnnnnnnnnn",
+                        "nnnnnnnnnn_nnnnnnnnnn",
+                        "nnnnnnnnnn_nnnnnnnnnn",
+                        "nnnnnnnnnn_nnnnnnnnnn",
+                        "nnnnnnnnnn_nnnnnnnnnn",
+                        "nnnnnnnnnn_nnnnnnnnnn",
+                        "nnnnnnnnnn_nnnnnnnnnn",
+                        "ppppppppp_ppppppppp",
+                        "ppppppppp_ppppppppp",
+                        "ppppppppp_ppppppppp",
+                        "ppppppppp_ppppppppp",
+                        "ppppppppp_ppppppppp",
+                        "ssssss_ssssss",
                     ]
                 }
             };
