@@ -12,93 +12,46 @@
     <style>
         body {
             font-family: 'Padauk', 'Inter', sans-serif;
-            background-color: #111827; /* Dark background */
-            color: #F3F4F6; /* Light text */
+            background-color: #111827;
+            color: #F3F4F6;
         }
-        .page {
-            display: none;
-        }
-        .page.active {
-            display: block;
-        }
+        .page { display: none; }
+        .page.active { display: block; }
         .seat {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            margin: 3px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 500;
+            width: 28px; height: 28px; border-radius: 6px; margin: 3px;
+            cursor: pointer; display: inline-flex; align-items: center;
+            justify-content: center; font-size: 12px; font-weight: 500;
             transition: transform 0.2s, background-color 0.2s;
             flex-shrink: 0;
         }
-        .seat.price-800 {
-            width: 32px; 
-        }
-        .seat:not(.sold):not(.space):hover {
-            transform: scale(1.1);
-        }
+        .seat.price-800 { width: 32px; }
+        .seat:not(.sold):not(.space):hover { transform: scale(1.1); }
         .seat.price-300 { background-color: #34D399; color: #064E3B; }
         .seat.price-500 { background-color: #60A5FA; color: #1E3A8A; }
         .seat.price-800 { background-color: #F472B6; color: #831843; }
         .seat.selected { background-color: #FBBF24; color: #78350F; font-weight: bold; }
         .seat.sold { background-color: #4B5563; cursor: not-allowed; }
         .seat.space { background-color: transparent; cursor: default; }
-
-        .seat-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 5px;
-            flex-wrap: nowrap;
-        }
-        .row-label {
-            width: 40px;
-            text-align: right;
-            margin-right: 10px;
-            font-weight: bold;
-            color: #9CA3AF;
-        }
+        .seat-row { display: flex; align-items: center; justify-content: center; margin-bottom: 5px; flex-wrap: nowrap; }
+        .row-label { width: 40px; text-align: right; margin-right: 10px; font-weight: bold; color: #9CA3AF; }
         .screen {
-            width: 90%;
-            margin: 24px auto;
-            padding: 8px;
-            background-color: #374151;
-            text-align: center;
-            border-radius: 8px;
-            border-bottom: 5px solid #F9FAFB;
+            width: 90%; margin: 24px auto; padding: 8px; background-color: #374151;
+            text-align: center; border-radius: 8px; border-bottom: 5px solid #F9FAFB;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         }
         .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
+            display: inline-block; padding: 12px 24px; border-radius: 8px;
+            font-weight: 600; text-align: center; cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
         }
         .btn-primary { background-color: #3B82F6; color: white; }
         .btn-primary:hover { background-color: #2563EB; transform: translateY(-2px); }
+        .btn-primary:disabled { background-color: #9CA3AF; cursor: not-allowed; }
         .btn-secondary { background-color: #6B7280; color: white; }
         .btn-secondary:hover { background-color: #4B5563; }
         .btn-back { padding: 8px 16px; }
-        
-        /* --- KEY FIX FOR SCROLLING --- */
-        #seatingContainer {
-            /* This will center the seatingGrid which is now an inline-block */
-            text-align: center;
-        }
-        #seatingGrid {
-            /* This is the key fix. It forces the grid to be as wide as its content,
-               which allows the parent's overflow-x-auto to work correctly. */
-            display: inline-block;
-        }
-        /* --- END OF FIX --- */
-
+        #seatingContainer { text-align: center; }
+        #seatingGrid { display: inline-block; }
         @media (max-width: 640px) {
             .seat { width: 24px; height: 24px; margin: 2px; font-size: 10px; }
             .seat.price-800 { width: 28px; }
@@ -119,9 +72,13 @@
 <body class="antialiased">
 
     <div id="app-container" class="max-w-5xl mx-auto p-4 sm:p-6">
+        <!-- Loading / Status Message -->
+        <div id="loadingStatus" class="text-center p-8 text-lg">
+            <p>Connecting to server...</p>
+        </div>
 
         <!-- Page 1: Intro -->
-        <div id="introPage" class="page active">
+        <div id="introPage" class="page">
             <div class="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg text-center">
                 <h1 class="text-3xl md:text-4xl font-bold mb-4">What happened to the wolf?</h1>
                 <img src="https://raw.githubusercontent.com/Khunnaingpyaehtun/Ticket-System/main/Poster.png" 
@@ -217,103 +174,105 @@
         </div>
     </div>
 
-    <script>
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // --- Firebase and App State Variables ---
+        let db;
+        let auth;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'movie-ticket-system-default';
+        let unsubscribeSeatingPlan; // To manage the real-time listener
+
+        // --- App Logic ---
         document.addEventListener('DOMContentLoaded', () => {
+            const loadingStatus = document.getElementById('loadingStatus');
+
+            // Wait for Firebase config to be available before initializing
+            const waitForFirebase = setInterval(() => {
+                if (typeof __firebase_config !== 'undefined') {
+                    clearInterval(waitForFirebase);
+                    initializeAppLogic();
+                }
+            }, 100); // Check every 100ms
+
+            function initializeAppLogic() {
+                initializeFirebase()
+                    .then(() => {
+                        loadingStatus.style.display = 'none'; // Hide loading message
+                        setupEventListeners();
+                        navigateTo('introPage'); // Show the first page
+                    })
+                    .catch(error => {
+                        console.error("Firebase initialization failed:", error);
+                        loadingStatus.innerHTML = `<p class="text-red-400">Error: Could not connect to the database. Please refresh the page.</p>`;
+                    });
+            }
+
             const pages = document.querySelectorAll('.page');
-            const buyTicketsBtn = document.getElementById('buyTicketsBtn');
-            const cinemaButtons = document.querySelectorAll('#cinemaSelectionPage button');
-            const confirmBookingBtn = document.getElementById('confirmBookingBtn');
-            const paymentLink = document.getElementById('paymentLink');
-
-            // Back buttons
-            const backToIntroBtn = document.getElementById('backToIntroBtn');
-            const backToCinemaBtn = document.getElementById('backToCinemaBtn');
-            const backToSeatingBtn = document.getElementById('backToSeatingBtn');
-
+            const cinemaData = {
+                 'maesot': { id: 'maesot', name: 'SF CINEMA (MAE SOT)', time: '၁၉/၇/၂၀၂၅ ညနေ ၃:၀၀', prices: { n: 300, p: 500, s: 800 }, rowLabels: ["M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"], layout: ["nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","ppp_pppppppppppppppp_ppp","ppp_pppppppppppppppp_ppp","ppp_pppppppppppppppp_ppp","ppp_pppppppppppppppp_ppp","sss_sssssss_sss"] },
+                'chiangmai': { id: 'chiangmai', name: 'SFX CINEMA (MAYA CHIANGMAI)', time: '၁၉/၇/၂၀၂၅ ညနေ ၆:၀၀', prices: { n: 300, p: 500, s: 800 }, rowLabels: ["N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"], layout: ["nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","pppppppppppppppppppppp","pppppppppppppppppppppp","pppppppppppppppppppppp","ss_ss_ss_ss_ss_ss"] },
+                'mbk': { id: 'mbk', name: 'SF CINEMA (MBK CENTER)', time: '၁၉/၇/၂၀၂၅ ညနေ ၄:၀၀', prices: { n: 300, p: 500, s: 800 }, rowLabels: ["P", "N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"], layout: ["nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","ppppppppp_ppppppppp","ppppppppp_ppppppppp","ppppppppp_ppppppppp","ppppppppp_ppppppppp","ppppppppp_ppppppppp","ssssss_ssssss"] }
+            };
             let selectedCinema = {};
             let selectedSeats = [];
             let totalPrice = 0;
             let countdownInterval;
             const COUNTDOWN_SECONDS = 15 * 60;
 
-            document.querySelector('#introPage img').src = 'https://raw.githubusercontent.com/Khunnaingpyaehtun/Ticket-System/main/Poster.png';
-            
-            const cinemaData = {
-                 'maesot': {
-                    name: 'SF CINEMA (MAE SOT)',
-                    time: '၁၉/၇/၂၀၂၅ ညနေ ၃:၀၀',
-                    prices: { n: 300, p: 500, s: 800 },
-                    rowLabels: ["M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"],
-                    layout: [
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",
-                        "ppp_pppppppppppppppp_ppp",
-                        "ppp_pppppppppppppppp_ppp",
-                        "ppp_pppppppppppppppp_ppp",
-                        "ppp_pppppppppppppppp_ppp",
-                        "sss_sssssss_sss",
-                    ]
-                },
-                'chiangmai': {
-                    name: 'SFX CINEMA (MAYA CHIANGMAI)',
-                    time: '၁၉/၇/၂၀၂၅ ညနေ ၆:၀၀',
-                    prices: { n: 300, p: 500, s: 800 },
-                    rowLabels: ["N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"],
-                    layout: [
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",
-                        "nnnnnnnnnnnnnnnnnnnnnnnn",
-                        "pppppppppppppppppppppp",
-                        "pppppppppppppppppppppp",
-                        "pppppppppppppppppppppp",
-                        "ss_ss_ss_ss_ss_ss",
-                    ]
-                },
-                'mbk': {
-                    name: 'SF CINEMA (MBK CENTER)',
-                    time: '၁၉/၇/၂၀၂၅ ညနေ ၄:၀၀',
-                    prices: { n: 300, p: 500, s: 800 },
-                    rowLabels: ["P", "N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"],
-                    layout: [
-                        "nnnnnnnnnn_nnnnnnnnnn",
-                        "nnnnnnnnnn_nnnnnnnnnn",
-                        "nnnnnnnnnn_nnnnnnnnnn",
-                        "nnnnnnnnnn_nnnnnnnnnn",
-                        "nnnnnnnnnn_nnnnnnnnnn",
-                        "nnnnnnnnnn_nnnnnnnnnn",
-                        "nnnnnnnnnn_nnnnnnnnnn",
-                        "nnnnnnnnnn_nnnnnnnnnn",
-                        "nnnnnnnnnn_nnnnnnnnnn",
-                        "ppppppppp_ppppppppp",
-                        "ppppppppp_ppppppppp",
-                        "ppppppppp_ppppppppp",
-                        "ppppppppp_ppppppppp",
-                        "ppppppppp_ppppppppp",
-                        "ssssss_ssssss",
-                    ]
+            // --- Firebase Functions ---
+            async function initializeFirebase() {
+                const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+                if (!firebaseConfigStr) {
+                    throw new Error("Firebase config not found!");
                 }
-            };
+                const firebaseConfig = JSON.parse(firebaseConfigStr);
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (authToken) {
+                    await signInWithCustomToken(auth, authToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                console.log("Firebase initialized and user signed in.");
+            }
             
+            function setupEventListeners() {
+                const buyTicketsBtn = document.getElementById('buyTicketsBtn');
+                const cinemaButtons = document.querySelectorAll('#cinemaSelectionPage button');
+                const confirmBookingBtn = document.getElementById('confirmBookingBtn');
+                const paymentLink = document.getElementById('paymentLink');
+                const backToIntroBtn = document.getElementById('backToIntroBtn');
+                const backToCinemaBtn = document.getElementById('backToCinemaBtn');
+                const backToSeatingBtn = document.getElementById('backToSeatingBtn');
+
+                buyTicketsBtn.addEventListener('click', () => navigateTo('cinemaSelectionPage'));
+                cinemaButtons.forEach(button => {
+                    button.addEventListener('click', () => generateSeatingPlan(button.dataset.cinema));
+                });
+                confirmBookingBtn.addEventListener('click', processBooking);
+                paymentLink.addEventListener('click', () => clearInterval(countdownInterval));
+                backToIntroBtn.addEventListener('click', () => navigateTo('introPage'));
+                backToCinemaBtn.addEventListener('click', () => navigateTo('cinemaSelectionPage'));
+                backToSeatingBtn.addEventListener('click', () => navigateTo('seatingPlanPage'));
+            }
+
+            // --- Navigation and UI Functions ---
             function navigateTo(pageId) {
+                if (pageId !== 'seatingPlanPage' && unsubscribeSeatingPlan) {
+                    unsubscribeSeatingPlan();
+                    unsubscribeSeatingPlan = null;
+                }
                 clearInterval(countdownInterval);
                 pages.forEach(page => {
-                    page.classList.remove('active');
-                    if (page.id === pageId) {
-                        page.classList.add('active');
-                    }
+                    page.classList.toggle('active', page.id === pageId);
                 });
                 window.scrollTo(0, 0);
             }
@@ -321,7 +280,7 @@
             function updateSelectionSummary() {
                 const selectedSeatsInfo = document.getElementById('selectedSeatsInfo');
                 const totalPriceInfo = document.getElementById('totalPriceInfo');
-
+                const confirmBookingBtn = document.getElementById('confirmBookingBtn');
                 if (selectedSeats.length === 0) {
                     selectedSeatsInfo.textContent = '-';
                     totalPriceInfo.textContent = '0 Baht';
@@ -329,19 +288,41 @@
                     selectedSeatsInfo.textContent = selectedSeats.map(s => s.id).sort().join(', ');
                     totalPriceInfo.textContent = `${totalPrice} Baht`;
                 }
-                
                 confirmBookingBtn.disabled = selectedSeats.length === 0;
-                confirmBookingBtn.classList.toggle('opacity-50', confirmBookingBtn.disabled);
-                confirmBookingBtn.classList.toggle('cursor-not-allowed', confirmBookingBtn.disabled);
             }
 
             function generateSeatingPlan(cinemaId) {
+                if (!db) {
+                    loadingStatus.innerHTML = `<p class="text-red-400">Database is not connected. Please refresh.</p>`;
+                    loadingStatus.style.display = 'block';
+                    return;
+                }
                 selectedCinema = cinemaData[cinemaId];
                 document.getElementById('cinemaName').textContent = selectedCinema.name;
                 document.getElementById('cinemaTime').textContent = selectedCinema.time;
                 
+                selectedSeats = [];
+                totalPrice = 0;
+                updateSelectionSummary();
+
+                const cinemaDocRef = doc(db, `artifacts/${appId}/public/data/cinemas`, cinemaId);
+
+                unsubscribeSeatingPlan = onSnapshot(cinemaDocRef, (docSnap) => {
+                    console.log("Received real-time update for seats.");
+                    const soldSeats = docSnap.exists() ? docSnap.data().soldSeats || [] : [];
+                    renderSeatingGrid(soldSeats);
+                }, (error) => {
+                    console.error("Error listening to seat data:", error);
+                });
+
+                navigateTo('seatingPlanPage');
+            }
+            
+            function renderSeatingGrid(soldSeats = []) {
                 const seatingGrid = document.getElementById('seatingGrid');
                 seatingGrid.innerHTML = '';
+                
+                const currentSelectedIds = selectedSeats.map(s => s.id);
                 selectedSeats = [];
                 totalPrice = 0;
 
@@ -349,17 +330,11 @@
                     const rowLabelText = selectedCinema.rowLabels[rowIndex];
                     const rowDiv = document.createElement('div');
                     rowDiv.className = 'seat-row';
-                    
-                    const rowLabelDiv = document.createElement('div');
-                    rowLabelDiv.className = 'row-label';
-                    rowLabelDiv.textContent = rowLabelText;
-                    rowDiv.appendChild(rowLabelDiv);
+                    rowDiv.appendChild(Object.assign(document.createElement('div'), { className: 'row-label', textContent: rowLabelText }));
 
                     let seatNumber = 1;
-                    for (let i = 0; i < rowLayout.length; i++) {
-                        const seatType = rowLayout[i];
+                    for (const seatType of rowLayout) {
                         const seat = document.createElement('div');
-                        
                         if (seatType === '_') {
                             seat.className = 'seat space';
                         } else {
@@ -367,18 +342,19 @@
                             seat.dataset.seatId = seatId;
                             seat.textContent = seatNumber;
 
-                            if (seatType === 'x') {
+                            if (soldSeats.includes(seatId)) {
                                 seat.className = 'seat sold';
                             } else {
                                 const price = selectedCinema.prices[seatType];
-                                let priceClass = '';
-                                if(price === 300) priceClass = 'price-300';
-                                else if(price === 500) priceClass = 'price-500';
-                                else if(price === 800) priceClass = 'price-800';
-
-                                seat.className = `seat ${priceClass}`;
+                                seat.className = `seat price-${price}`;
                                 seat.dataset.price = price;
                                 
+                                if(currentSelectedIds.includes(seatId)) {
+                                    seat.classList.add('selected');
+                                    selectedSeats.push({id: seatId, price: price});
+                                    totalPrice += parseInt(price);
+                                }
+
                                 seat.addEventListener('click', () => {
                                     if (seat.classList.contains('selected')) {
                                         seat.classList.remove('selected');
@@ -398,9 +374,51 @@
                     }
                     seatingGrid.appendChild(rowDiv);
                 });
-
                 updateSelectionSummary();
-                navigateTo('seatingPlanPage');
+            }
+
+            async function processBooking() {
+                const confirmBookingBtn = document.getElementById('confirmBookingBtn');
+                if (selectedSeats.length === 0) return;
+                confirmBookingBtn.disabled = true;
+                confirmBookingBtn.textContent = 'Processing...';
+
+                const cinemaId = selectedCinema.id;
+                const cinemaDocRef = doc(db, `artifacts/${appId}/public/data/cinemas`, cinemaId);
+                const seatIdsToBook = selectedSeats.map(s => s.id);
+
+                try {
+                    await setDoc(cinemaDocRef, { 
+                        soldSeats: arrayUnion(...seatIdsToBook) 
+                    }, { merge: true });
+                    
+                    console.log("Seats successfully booked in Firestore.");
+                    showPaymentPage();
+
+                } catch (error) {
+                    console.error("Error booking seats: ", error);
+                    alert("An error occurred. Some seats may have just been taken. The view has been updated.");
+                } finally {
+                    confirmBookingBtn.disabled = false;
+                    confirmBookingBtn.textContent = 'Confirm';
+                }
+            }
+            
+            function showPaymentPage() {
+                const sortedSeats = selectedSeats.map(s => s.id).sort().join(', ');
+                const now = new Date();
+                const bookingTimeText = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+                document.getElementById('paymentCinemaName').textContent = selectedCinema.name;
+                document.getElementById('paymentCinemaTime').textContent = selectedCinema.time;
+                document.getElementById('paymentSelectedSeats').textContent = sortedSeats;
+                document.getElementById('paymentTotalPrice').textContent = `${totalPrice} Baht`;
+                document.getElementById('bookingTime').textContent = bookingTimeText;
+                document.getElementById('paymentLink').href = 'https://m.me/24framesmozart';
+
+                navigateTo('paymentPage');
+                startCountdown();
+                generateAndSetupQRCode(sortedSeats, bookingTimeText);
             }
 
             function startCountdown() {
@@ -425,33 +443,6 @@
                 updateTimer();
                 countdownInterval = setInterval(updateTimer, 1000);
             }
-            
-            function showPaymentPage() {
-                if(selectedSeats.length === 0) return;
-                
-                const cinemaNameEl = document.getElementById('paymentCinemaName');
-                const cinemaTimeEl = document.getElementById('paymentCinemaTime');
-                const selectedSeatsEl = document.getElementById('paymentSelectedSeats');
-                const totalPriceEl = document.getElementById('paymentTotalPrice');
-                const bookingTimeEl = document.getElementById('bookingTime');
-                
-                const sortedSeats = selectedSeats.map(s => s.id).sort().join(', ');
-                const now = new Date();
-                const bookingTimeText = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-
-                cinemaNameEl.textContent = selectedCinema.name;
-                cinemaTimeEl.textContent = selectedCinema.time;
-                selectedSeatsEl.textContent = sortedSeats;
-                totalPriceEl.textContent = `${totalPrice} Baht`;
-                bookingTimeEl.textContent = bookingTimeText;
-
-                paymentLink.href = 'https://m.me/whathappenedtothewolf';
-
-                navigateTo('paymentPage');
-                startCountdown();
-                generateAndSetupQRCode(sortedSeats, bookingTimeText);
-            }
-
             function generateAndSetupQRCode(sortedSeats, bookingTimeText) {
                 const canvas = document.getElementById('qrCanvas');
                 const downloadBtn = document.getElementById('downloadQRBtn');
@@ -470,27 +461,6 @@
                     downloadBtn.download = `what-happened-to-the-wolf-booking.png`;
                 });
             }
-
-            // Event Listeners
-            buyTicketsBtn.addEventListener('click', () => navigateTo('cinemaSelectionPage'));
-            
-            cinemaButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const cinemaId = button.dataset.cinema;
-                    generateSeatingPlan(cinemaId);
-                });
-            });
-
-            confirmBookingBtn.addEventListener('click', showPaymentPage);
-            
-            paymentLink.addEventListener('click', () => {
-                clearInterval(countdownInterval);
-            });
-
-            // Back Button Event Listeners
-            backToIntroBtn.addEventListener('click', () => navigateTo('introPage'));
-            backToCinemaBtn.addEventListener('click', () => navigateTo('cinemaSelectionPage'));
-            backToSeatingBtn.addEventListener('click', () => navigateTo('seatingPlanPage'));
         });
     </script>
 </body>
