@@ -10,17 +10,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* Body အတွက် အခြေခံ စတိုင်များ */
         body {
             font-family: 'Padauk', 'Inter', sans-serif;
-            background-color: #111827; /* Dark background */
-            color: #F3F4F6; /* Light text */
+            background-color: #111827; /* အမှောင် နောက်ခံအရောင် */
+            color: #F3F4F6; /* အလင်းရောင် စာသား */
         }
+        /* Page များကို ပြသရန်/ဝှက်ရန် */
         .page {
             display: none;
         }
         .page.active {
             display: block;
         }
+        /* ခုံများအတွက် အခြေခံ စတိုင်များ */
         .seat {
             width: 28px;
             height: 28px;
@@ -33,31 +36,37 @@
             font-size: 12px;
             font-weight: 500;
             transition: transform 0.2s, background-color 0.2s;
-            flex-shrink: 0;
+            flex-shrink: 0; /* နေရာမလုံလောက်လျှင် ခုံများ မကျုံ့စေရန် */
         }
-        /* Sofa/Suite seats are usually wider */
+        /* Sofa/Suite ခုံများသည် ပိုကျယ်သည် */
         .seat.price-800 {
             width: 32px; 
         }
+        /* ရောင်းပြီးသား သို့မဟုတ် နေရာလွတ်မဟုတ်သော ခုံများပေါ်တွင် မောက်စ်တင်လိုက်လျှင် အရွယ်အစား အနည်းငယ် ကြီးလာစေရန် */
         .seat:not(.sold):not(.space):hover {
             transform: scale(1.1);
         }
-        /* Price-based colors */
-        .seat.price-300 { background-color: #34D399; color: #064E3B; } /* Green */
-        .seat.price-500 { background-color: #60A5FA; color: #1E3A8A; } /* Blue */
-        .seat.price-800 { background-color: #F472B6; color: #831843; } /* Pink */
+        /* ဈေးနှုန်းအလိုက် ခုံအရောင်များ */
+        .seat.price-300 { background-color: #34D399; color: #064E3B; } /* အစိမ်းရောင် */
+        .seat.price-500 { background-color: #60A5FA; color: #1E3A8A; } /* အပြာရောင် */
+        .seat.price-800 { background-color: #F472B6; color: #831843; } /* ပန်းရောင် */
 
-        .seat.selected { background-color: #FBBF24; color: #78350F; font-weight: bold; } /* Amber */
-        .seat.sold { background-color: #4B5563; cursor: not-allowed; } /* Gray */
+        /* ရွေးချယ်ထားသော ခုံများ */
+        .seat.selected { background-color: #FBBF24; color: #78350F; font-weight: bold; } /* ပယင်းရောင် */
+        /* ရောင်းပြီးသား ခုံများ */
+        .seat.sold { background-color: #4B5563; cursor: not-allowed; } /* မီးခိုးရောင် */
+        /* နေရာလွတ်များ */
         .seat.space { background-color: transparent; cursor: default; }
 
+        /* ခုံတန်းများအတွက် စတိုင်များ */
         .seat-row {
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 5px;
-            flex-wrap: nowrap;
+            flex-wrap: nowrap; /* ခုံတန်းများ တစ်တန်းတည်းရှိနေစေရန် */
         }
+        /* တန်းအမည် (ဥပမာ: A, B, C) အတွက် စတိုင်များ */
         .row-label {
             width: 40px;
             text-align: right;
@@ -65,6 +74,7 @@
             font-weight: bold;
             color: #9CA3AF;
         }
+        /* ဖန်သားပြင် (Screen) အတွက် စတိုင်များ */
         .screen {
             width: 90%;
             margin: 24px auto;
@@ -75,6 +85,7 @@
             border-bottom: 5px solid #F9FAFB;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         }
+        /* ခလုတ်များအတွက် အခြေခံ စတိုင်များ */
         .btn {
             display: inline-block;
             padding: 12px 24px;
@@ -84,6 +95,7 @@
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
         }
+        /* အဓိက ခလုတ် (Primary Button) */
         .btn-primary {
             background-color: #3B82F6;
             color: white;
@@ -92,6 +104,7 @@
             background-color: #2563EB;
             transform: translateY(-2px);
         }
+        /* ဒုတိယ ခလုတ် (Secondary Button) */
          .btn-secondary {
             background-color: #6B7280;
             color: white;
@@ -99,11 +112,12 @@
         .btn-secondary:hover {
             background-color: #4B5563;
         }
+        /* နောက်ပြန်ခလုတ် (Back Button) */
         .btn-back {
             padding: 8px 16px;
         }
         
-        /* Responsive styles for mobile */
+        /* Responsive styles for mobile (640px အောက် မျက်နှာပြင်များ) */
         @media (max-width: 640px) {
             .seat {
                 width: 24px;
@@ -120,10 +134,11 @@
                 font-size: 0.8rem;
             }
             h1 {
-                font-size: 1.5rem !important; /* using !important to override tailwind */
+                font-size: 1.5rem !important; /* Tailwind ကို override လုပ်ရန် !important အသုံးပြုသည် */
             }
         }
 
+        /* Responsive styles for smaller mobile (420px အောက် မျက်နှာပြင်များ) */
         @media (max-width: 420px) {
              .seat {
                 width: 20px;
@@ -140,6 +155,7 @@
             }
         }
         
+        /* Responsive styles for very small mobile (375px အောက် မျက်နှာပြင်များ) */
         @media (max-width: 375px) {
              .seat {
                 width: 18px;
@@ -268,7 +284,7 @@
             const confirmBookingBtn = document.getElementById('confirmBookingBtn');
             const paymentLink = document.getElementById('paymentLink');
 
-            // Back buttons
+            // နောက်ပြန်ခလုတ်များ
             const backToIntroBtn = document.getElementById('backToIntroBtn');
             const backToCinemaBtn = document.getElementById('backToCinemaBtn');
             const backToSeatingBtn = document.getElementById('backToSeatingBtn');
@@ -277,12 +293,12 @@
             let selectedSeats = [];
             let totalPrice = 0;
             let countdownInterval;
-            const COUNTDOWN_SECONDS = 15 * 60;
+            const COUNTDOWN_SECONDS = 15 * 60; // ငွေပေးချေမှုအတွက် ၁၅ မိနစ် သတ်မှတ်ထားသည်
 
-            // Using a reliable image hosting link for the poster
+            // ရုပ်ရှင်ပိုစတာအတွက် ယုံကြည်စိတ်ချရသော ပုံ URL ကို အသုံးပြုသည်
             document.querySelector('#introPage img').src = 'https://raw.githubusercontent.com/Khunnaingpyaehtun/Ticket-System/main/Poster.png';
 
-            // FINAL CORRECTED LAYOUTS based on meticulous PDF re-evaluation
+            // ရုပ်ရှင်ရုံ အချက်အလက်နှင့် ခုံနေရာချထားမှုများ (PDF အပေါ် အခြေခံ၍ ပြင်ဆင်ထားသည်)
             // s=sofa/suite(800), p=premium/prime(500), n=normal/deluxe(300), x=sold, _=space
             const cinemaData = {
                  'maesot': {
@@ -353,17 +369,19 @@
                 }
             };
             
+            // စာမျက်နှာများ ပြောင်းလဲရန် လုပ်ဆောင်ချက်
             function navigateTo(pageId) {
-                clearInterval(countdownInterval);
+                clearInterval(countdownInterval); // စာမျက်နှာပြောင်းတိုင်း countdown ကို ရပ်သည်
                 pages.forEach(page => {
                     page.classList.remove('active');
                     if (page.id === pageId) {
                         page.classList.add('active');
                     }
                 });
-                window.scrollTo(0, 0);
+                window.scrollTo(0, 0); // စာမျက်နှာအပေါ်ဆုံးသို့ ပြန်ရွှေ့သည်
             }
 
+            // ရွေးချယ်ထားသော ခုံများနှင့် စုစုပေါင်း ဈေးနှုန်းကို update လုပ်ရန်
             function updateSelectionSummary() {
                 const selectedSeatsInfo = document.getElementById('selectedSeatsInfo');
                 const totalPriceInfo = document.getElementById('totalPriceInfo');
@@ -376,20 +394,22 @@
                     totalPriceInfo.textContent = `${totalPrice} Baht`;
                 }
                 
+                // ခုံမရွေးရသေးလျှင် Confirm ခလုတ်ကို ပိတ်ထားရန်
                 confirmBookingBtn.disabled = selectedSeats.length === 0;
                 confirmBookingBtn.classList.toggle('opacity-50', confirmBookingBtn.disabled);
                 confirmBookingBtn.classList.toggle('cursor-not-allowed', confirmBookingBtn.disabled);
             }
 
+            // ခုံနေရာချထားမှုကို ဖန်တီးရန်
             function generateSeatingPlan(cinemaId) {
                 selectedCinema = cinemaData[cinemaId];
                 document.getElementById('cinemaName').textContent = selectedCinema.name;
                 document.getElementById('cinemaTime').textContent = selectedCinema.time;
                 
                 const seatingGrid = document.getElementById('seatingGrid');
-                seatingGrid.innerHTML = '';
-                selectedSeats = [];
-                totalPrice = 0;
+                seatingGrid.innerHTML = ''; // ရှိပြီးသား ခုံများကို ရှင်းလင်းသည်
+                selectedSeats = []; // ရွေးချယ်ထားသော ခုံများကို ရှင်းလင်းသည်
+                totalPrice = 0; // စုစုပေါင်း ဈေးနှုန်းကို ရှင်းလင်းသည်
 
                 selectedCinema.layout.forEach((rowLayout, rowIndex) => {
                     const rowLabelText = selectedCinema.rowLabels[rowIndex];
@@ -407,14 +427,14 @@
                         const seat = document.createElement('div');
                         
                         if (seatType === '_') {
-                            seat.className = 'seat space';
+                            seat.className = 'seat space'; // နေရာလွတ်
                         } else {
                             const seatId = `${rowLabelText}${seatNumber}`;
                             seat.dataset.seatId = seatId;
                             seat.textContent = seatNumber;
 
                             if (seatType === 'x') {
-                                seat.className = 'seat sold';
+                                seat.className = 'seat sold'; // ရောင်းပြီးသား ခုံ
                             } else {
                                 const price = selectedCinema.prices[seatType];
                                 let priceClass = '';
@@ -422,9 +442,10 @@
                                 else if(price === 500) priceClass = 'price-500';
                                 else if(price === 800) priceClass = 'price-800';
 
-                                seat.className = `seat ${priceClass}`;
+                                seat.className = `seat ${priceClass}`; // ဈေးနှုန်းအလိုက် အရောင်
                                 seat.dataset.price = price;
                                 
+                                // ခုံကို နှိပ်လျှင် ရွေးချယ်/မရွေးချယ် လုပ်ဆောင်ချက်
                                 seat.addEventListener('click', () => {
                                     if (seat.classList.contains('selected')) {
                                         seat.classList.remove('selected');
@@ -435,7 +456,7 @@
                                         totalPrice += parseInt(seat.dataset.price);
                                         selectedSeats.push({id: seatId, price: seat.dataset.price});
                                     }
-                                    updateSelectionSummary();
+                                    updateSelectionSummary(); // ရွေးချယ်မှု အကျဉ်းချုပ်ကို update လုပ်သည်
                                 });
                             }
                             seatNumber++;
@@ -449,6 +470,7 @@
                 navigateTo('seatingPlanPage');
             }
 
+            // Countdown Timer စတင်ရန် လုပ်ဆောင်ချက်
             function startCountdown() {
                 let timeLeft = COUNTDOWN_SECONDS;
                 const timerEl = document.getElementById('countdownTimer');
@@ -459,7 +481,7 @@
                         clearInterval(countdownInterval);
                         messageEl.textContent = "⏰ အချိန်စေ့သွားပါပြီ။ ကျေးဇူးပြု၍ပြန်စပါ။";
                         timerEl.textContent = "Reloading...";
-                        setTimeout(() => location.reload(), 2000);
+                        setTimeout(() => location.reload(), 2000); // အချိန်ကုန်လျှင် စာမျက်နှာကို reload လုပ်သည်
                         return;
                     }
                     timeLeft--;
@@ -469,11 +491,12 @@
                 };
                 
                 updateTimer();
-                countdownInterval = setInterval(updateTimer, 1000);
+                countdownInterval = setInterval(updateTimer, 1000); // ၁ စက္ကန့်တိုင်း update လုပ်သည်
             }
             
+            // ငွေပေးချေမှု စာမျက်နှာကို ပြသရန်
             function showPaymentPage() {
-                if(selectedSeats.length === 0) return;
+                if(selectedSeats.length === 0) return; // ခုံမရွေးရသေးလျှင် ပြန်ထွက်သည်
                 
                 const cinemaNameEl = document.getElementById('paymentCinemaName');
                 const cinemaTimeEl = document.getElementById('paymentCinemaTime');
@@ -481,7 +504,7 @@
                 const totalPriceEl = document.getElementById('paymentTotalPrice');
                 const bookingTimeEl = document.getElementById('bookingTime');
                 
-                const sortedSeats = selectedSeats.map(s => s.id).sort().join(', ');
+                const sortedSeats = selectedSeats.map(s => s.id).sort().join(', '); // ရွေးချယ်ထားသော ခုံများကို စီ၍ ပြသည်
                 const now = new Date();
                 const bookingTimeText = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
@@ -491,13 +514,14 @@
                 totalPriceEl.textContent = `${totalPrice} Baht`;
                 bookingTimeEl.textContent = bookingTimeText;
 
-                paymentLink.href = 'https://m.me/24framesmozart';
+                paymentLink.href = 'https://m.me/24framesmozart'; // ငွေပေးချေမှု လင့်ခ်
 
                 navigateTo('paymentPage');
-                startCountdown();
-                generateAndSetupQRCode(sortedSeats, bookingTimeText);
+                startCountdown(); // Countdown timer ကို စတင်သည်
+                generateAndSetupQRCode(sortedSeats, bookingTimeText); // QR Code ကို ဖန်တီးသည်
             }
 
+            // QR Code ကို ဖန်တီးပြီး download လုပ်ရန်
             function generateAndSetupQRCode(sortedSeats, bookingTimeText) {
                 const canvas = document.getElementById('qrCanvas');
                 const downloadBtn = document.getElementById('downloadQRBtn');
@@ -507,17 +531,17 @@
                 QRCode.toCanvas(canvas, qrText, { width: 220, margin: 2 }, function (error) {
                     if (error) {
                         console.error(error);
-                        canvas.style.display = 'none';
-                        downloadBtn.style.display = 'none';
+                        canvas.style.display = 'none'; // error ရှိလျှင် canvas ကို ဝှက်သည်
+                        downloadBtn.style.display = 'none'; // error ရှိလျှင် download ခလုတ်ကို ဝှက်သည်
                         return;
                     }
                     console.log('QR code generated successfully!');
-                    downloadBtn.href = canvas.toDataURL('image/png');
+                    downloadBtn.href = canvas.toDataURL('image/png'); // QR code ပုံကို download လုပ်ရန်
                     downloadBtn.download = `what-happened-to-the-wolf-booking.png`;
                 });
             }
 
-            // Event Listeners
+            // Event Listeners များ
             buyTicketsBtn.addEventListener('click', () => navigateTo('cinemaSelectionPage'));
             
             cinemaButtons.forEach(button => {
@@ -530,10 +554,10 @@
             confirmBookingBtn.addEventListener('click', showPaymentPage);
             
             paymentLink.addEventListener('click', () => {
-                clearInterval(countdownInterval);
+                clearInterval(countdownInterval); // ငွေပေးချေမှု လင့်ခ်ကို နှိပ်လျှင် countdown ကို ရပ်သည်
             });
 
-            // Back Button Event Listeners
+            // နောက်ပြန်ခလုတ် Event Listeners များ
             backToIntroBtn.addEventListener('click', () => navigateTo('introPage'));
             backToCinemaBtn.addEventListener('click', () => navigateTo('cinemaSelectionPage'));
             backToSeatingBtn.addEventListener('click', () => navigateTo('seatingPlanPage'));
