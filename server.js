@@ -14,26 +14,20 @@ const PORT = process.env.PORT || 3000;
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDjTgOc2O83MSNYkixcevimaixL9jox0qA",
-  authDomain: "movie-ticket-2c720.firebaseapp.com",
-  projectId: "movie-ticket-2c720",
-  storageBucket: "movie-ticket-2c720.firebasestorage.app",
-  messagingSenderId: "381146524736",
-  appId: "1:381146524736:web:6a3df343968952d50a83a5",
-  measurementId: "G-YM8JD5T9ZC"
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
-console.log("Get firestore:", getFirestore(firebaseApp));
 console.log('Firebase initialized successfully.');
 
-// Debug: Check if environment variables are loaded
-console.log('Environment variables loaded:');
-console.log('MAESOT_CINEMA_CODE:', process.env.MAESOT_CINEMA_CODE);
-console.log('CHIANGMAI_CINEMA_CODE:', process.env.CHIANGMAI_CINEMA_CODE);
-console.log('MBK_CINEMA_CODE:', process.env.MBK_CINEMA_CODE);
 
 // Middleware
 app.use(cors());
@@ -91,59 +85,6 @@ app.get('/api/seats/:cinemaId', async (req, res) => {
         });
     } catch (error) {
         console.error('Error getting seats:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// 2. Store seat numbers to Firebase
-app.post('/api/seats', async (req, res) => {
-    try {
-        const {
-            cinemaId,
-            selectedSeats
-        } = req.body;
-
-        if (!cinemaId || !selectedSeats || !Array.isArray(selectedSeats)) {
-            return res.status(400).json({ 
-                error: 'Missing required fields: cinemaId and selectedSeats array' 
-            });
-        }
-
-        // Get current cinema data to check if seats are available
-        const cinemaRef = doc(db, 'cinemas', cinemaId);
-        const cinemaSnap = await getDoc(cinemaRef);
-        
-        if (!cinemaSnap.exists()) {
-            return res.status(404).json({ error: 'Cinema not found' });
-        }
-
-        const cinemaData = cinemaSnap.data();
-        const currentSoldSeats = cinemaData.soldSeats || [];
-        const seatIds = selectedSeats.map(seat => seat.id || seat);
-        
-        // Check if any seats are already sold
-        const unavailableSeats = seatIds.filter(seatId => currentSoldSeats.includes(seatId));
-        
-        if (unavailableSeats.length > 0) {
-            return res.status(400).json({ 
-                error: 'Some seats are no longer available', 
-                unavailableSeats 
-            });
-        }
-
-        // Update cinema with new sold seats
-        await updateDoc(cinemaRef, {
-            soldSeats: arrayUnion(...seatIds)
-        });
-
-        res.status(201).json({
-            success: true,
-            message: 'Seats stored successfully',
-            cinemaId: cinemaId,
-            storedSeats: seatIds
-        });
-    } catch (error) {
-        console.error('Error storing seats:', error);
         res.status(500).json({ error: error.message });
     }
 });
