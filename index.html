@@ -400,8 +400,74 @@
                 confirmBookingBtn.classList.toggle('cursor-not-allowed', confirmBookingBtn.disabled);
             }
 
+
+
+            let Maesot_Cinema_SoldSeats = [];
+            let CNX_Cinema_SoldSeats = [];
+            let BKK_Cinema_SoldSeats = [];
+
             // ခုံနေရာချထားမှုကို ဖန်တီးရန်
-            function generateSeatingPlan(cinemaId) {
+            async function generateSeatingPlan(cinemaId) {
+                // Fetch sold seats data from API when the page loads 
+                async function fetchSoldSeats(cinemaName) 
+                {
+                    let cinemaCode = '';
+                    try {
+                        switch(cinemaName)
+                        {
+                            case 'maesot':
+                                cinemaCode = 1; // SF CINEMA (MAE SOT)
+                                break;
+                            case 'chiangmai':
+                                cinemaCode = 2; // SFX CINEMA (MAYA CHIANGMAI)
+                                break;
+                            case 'mbk':
+                                cinemaCode = 3; // SF CINEMA (MBK CENTER)
+                                break;
+                            default:
+                                console.error('Invalid cinema name:', cinemaName);
+                                return;
+                        }
+
+                        const response = await fetch(`http://localhost:3000/api/seats/${cinemaCode}`);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        const data = await response.json();
+                        
+                        if (data.success && data.soldSeats) {
+                            // Store the sold seats data for later use when generating seating plan
+                            return soldSeatsData = data.soldSeats[0].split(',');
+                            
+                        } else {
+                            console.error('Failed to load sold seats data');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching sold seats data:', error);
+                        // Set empty array as fallback
+                        window.soldSeatsData = [];
+                    }
+                }
+                
+
+                switch(cinemaId) {
+                    case 'maesot':
+                         Maesot_Cinema_SoldSeats = await fetchSoldSeats('maesot');
+                         console.log("Maesot Cinema Seats: ", Maesot_Cinema_SoldSeats);
+                        break;
+                    case 'chiangmai':
+                        CNX_Cinema_SoldSeats = await fetchSoldSeats('chiangmai');
+                        console.log("CNX Cinema Seats: ", CNX_Cinema_SoldSeats);
+                        break;
+                    case 'mbk':
+                        BKK_Cinema_SoldSeats = await fetchSoldSeats('mbk');
+                        console.log("BKK Cinema Seats: ", BKK_Cinema_SoldSeats);
+                        break;
+                    default:
+                        console.error('Invalid cinema ID:', cinemaId);
+                        return;
+                }
+                
                 selectedCinema = cinemaData[cinemaId];
                 document.getElementById('cinemaName').textContent = selectedCinema.name;
                 document.getElementById('cinemaTime').textContent = selectedCinema.time;
@@ -425,17 +491,18 @@
                     for (let i = 0; i < rowLayout.length; i++) {
                         const seatType = rowLayout[i];
                         const seat = document.createElement('div');
-                        
+
                         if (seatType === '_') {
                             seat.className = 'seat space'; // နေရာလွတ်
                         } else {
                             const seatId = `${rowLabelText}${seatNumber}`;
                             seat.dataset.seatId = seatId;
-                            seat.textContent = seatNumber;
-
+                            seat.textContent = seatNumber; 
+                            
                             if (seatType === 'x') {
                                 seat.className = 'seat sold'; // ရောင်းပြီးသား ခုံ
-                            } else {
+                            } 
+                            else {
                                 const price = selectedCinema.prices[seatType];
                                 let priceClass = '';
                                 if(price === 300) priceClass = 'price-300';
@@ -443,21 +510,32 @@
                                 else if(price === 800) priceClass = 'price-800';
 
                                 seat.className = `seat ${priceClass}`; // ဈေးနှုန်းအလိုက် အရောင်
-                                seat.dataset.price = price;
                                 
-                                // ခုံကို နှိပ်လျှင် ရွေးချယ်/မရွေးချယ် လုပ်ဆောင်ချက်
-                                seat.addEventListener('click', () => {
-                                    if (seat.classList.contains('selected')) {
-                                        seat.classList.remove('selected');
-                                        totalPrice -= parseInt(seat.dataset.price);
-                                        selectedSeats = selectedSeats.filter(s => s.id !== seatId);
-                                    } else {
-                                        seat.classList.add('selected');
-                                        totalPrice += parseInt(seat.dataset.price);
-                                        selectedSeats.push({id: seatId, price: seat.dataset.price});
-                                    }
-                                    updateSelectionSummary(); // ရွေးချယ်မှု အကျဉ်းချုပ်ကို update လုပ်သည်
-                                });
+                                // Seat disable codes will be added here
+                                if (cinemaId === 'maesot' && Maesot_Cinema_SoldSeats.includes(seatId)) {
+                                    seat.className='seat sold'; // SF CINEMA (MAE SOT) ရောင်းပြီးသား ခုံများ
+                                } else if (cinemaId === 'chiangmai' && CNX_Cinema_SoldSeats.includes(seatId)) {
+                                    seat.className='seat sold'; // SFX CINEMA (MAYA CHIANGMAI) ရောင်းပြီးသား ခုံများ
+                                } else if (cinemaId === 'mbk' && BKK_Cinema_SoldSeats.includes(seatId)) {
+                                    seat.className='seat sold'; // SF CINEMA (MBK CENTER) ရောင်းပြီးသား ခုံများ
+                                }
+                                else{
+                                    seat.dataset.price = price;
+                                    
+                                    // ခုံကို နှိပ်လျှင် ရွေးချယ်/မရွေးချယ် လုပ်ဆောင်ချက်
+                                    seat.addEventListener('click', () => {
+                                        if (seat.classList.contains('selected')) {
+                                            seat.classList.remove('selected');
+                                            totalPrice -= parseInt(seat.dataset.price);
+                                            selectedSeats = selectedSeats.filter(s => s.id !== seatId);
+                                        } else {
+                                            seat.classList.add('selected');
+                                            totalPrice += parseInt(seat.dataset.price);
+                                            selectedSeats.push({id: seatId, price: seat.dataset.price});
+                                        }
+                                        updateSelectionSummary(); // ရွေးချယ်မှု အကျဉ်းချုပ်ကို update လုပ်သည်
+                                    });
+                                }
                             }
                             seatNumber++;
                         }
@@ -504,7 +582,7 @@
                 const totalPriceEl = document.getElementById('paymentTotalPrice');
                 const bookingTimeEl = document.getElementById('bookingTime');
                 
-                const sortedSeats = selectedSeats.map(s => s.id).sort().join(', '); // ရွေးချယ်ထားသော ခုံများကို စီ၍ ပြသည်
+                const sortedSeats = selectedSeats.map(s => s.id).sort().join(','); // ရွေးချယ်ထားသော ခုံများကို စီ၍ ပြသည်
                 const now = new Date();
                 const bookingTimeText = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
