@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Ticket System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="./public/output.css" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* This internal style block can remain as it is */
         body {
             font-family: 'Padauk', 'Inter', sans-serif;
             background-color: #111827; /* Dark background */
@@ -130,9 +133,9 @@
 
         const pages = document.querySelectorAll('.page');
         const cinemaData = {
-             'maesot': { id: 'maesot', name: 'SF CINEMA (MAE SOT)', time: '၁၉/၇/၂၀၂၅ ညနေ ၃:၃၀', prices: { n: 300, p: 500, s: 800 }, rowLabels: ["M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"], layout: ["nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","ppp_pppppppppppppppp_ppp","ppp_pppppppppppppppp_ppp","ppp_pppppppppppppppp_ppp","ppp_pppppppppppppppp_ppp","sss_sssssss_sss"] },
-             'chiangmai': { id: 'chiangmai', name: 'SFX CINEMA (MAYA CHIANGMAI)', time: '၁၉/၇/၂၀၂၅ ညနေ ၆:၀၀', prices: { n: 300, p: 500, s: 800 }, rowLabels: ["N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"], layout: ["nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","pppppppppppppppppppppp","pppppppppppppppppppppp","pppppppppppppppppppppp","ss_ss_ss_ss_ss_ss"] },
-             'mbk': { id: 'mbk', name: 'SF CINEMA (MBK CENTER)', time: '၁၉/၇/၂၀၂၅ ညနေ ၄:၀၀', prices: { n: 300, p: 500, s: 800 }, rowLabels: ["P", "N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"], layout: ["nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","ppppppppp_ppppppppp","ppppppppp_ppppppppp","ppppppppp_ppppppppp","ppppppppp_ppppppppp","ppppppppp_ppppppppp","ssssss_ssssss"] }
+            'maesot': { id: 'maesot', name: 'SF CINEMA (MAE SOT)', time: '၁၉/၇/၂၀၂၅ ညနေ ၃:၃၀', prices: { n: 300, p: 500, s: 800 }, rowLabels: ["M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"], layout: ["nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","nnn_nnnnnnnnnnnnnnnn_nnn","ppp_pppppppppppppppp_ppp","ppp_pppppppppppppppp_ppp","ppp_pppppppppppppppp_ppp","ppp_pppppppppppppppp_ppp","sss_sssssss_sss"] },
+            'chiangmai': { id: 'chiangmai', name: 'SFX CINEMA (MAYA CHIANGMAI)', time: '၁၉/၇/၂၀၂၅ ညနေ ၆:၀၀', prices: { n: 300, p: 500, s: 800 }, rowLabels: ["N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"], layout: ["nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","nnnnnnnnnnnnnnnnnnnnnnnn","pppppppppppppppppppppp","pppppppppppppppppppppp","pppppppppppppppppppppp","ss_ss_ss_ss_ss_ss"] },
+            'mbk': { id: 'mbk', name: 'SF CINEMA (MBK CENTER)', time: '၁၉/၇/၂၀၂၅ ညနေ ၄:၀၀', prices: { n: 300, p: 500, s: 800 }, rowLabels: ["P", "N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"], layout: ["nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","nnnnnnnnnn_nnnnnnnnnn","ppppppppp_ppppppppp","ppppppppp_ppppppppp","ppppppppp_ppppppppp","ppppppppp_ppppppppp","ppppppppp_ppppppppp","ssssss_ssssss"] }
         };
         let selectedCinema = {};
         let selectedSeats = [];
