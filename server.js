@@ -47,7 +47,7 @@ app.get('/api/seats/:cinemaId', async (req, res) => {
     try {
         const cinemaId = parseInt(req.params.cinemaId, 10);
 
-        console.log('Received cinemaId:', cinemaId);
+        // console.log('Received cinemaId:', cinemaId);
 
         if (isNaN(cinemaId)) {
             return res.status(400).json({ error: 'Cinema ID must be a number' });
@@ -68,7 +68,7 @@ app.get('/api/seats/:cinemaId', async (req, res) => {
                 return res.status(400).json({ error: 'Invalid cinema ID' });
         }
 
-        console.log('Cinema code from env:', cinemaCode);
+        // console.log('Cinema code from env:', cinemaCode);
 
         if (!cinemaCode) {
             return res.status(500).json({ error: 'Cinema code not configured for this cinema ID' });
