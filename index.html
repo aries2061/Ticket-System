@@ -520,7 +520,7 @@
                         
                         if (data.success && data.soldSeats) {
                             // Store the sold seats data for later use when generating seating plan
-                            return soldSeatsData = data.soldSeats[0].split(',');
+                            return soldSeatsData = data.soldSeats;
                             
                         } else {
                             console.error('Failed to load sold seats data');
@@ -536,15 +536,15 @@
                 switch(cinemaId) {
                     case 'maesot':
                          Maesot_Cinema_SoldSeats = await fetchSoldSeats('maesot');
-                         console.log("Maesot Cinema Seats: ", Maesot_Cinema_SoldSeats);
+                         // console.log("Maesot Cinema Seats: ", Maesot_Cinema_SoldSeats);
                         break;
                     case 'chiangmai':
                         CNX_Cinema_SoldSeats = await fetchSoldSeats('chiangmai');
-                        console.log("CNX Cinema Seats: ", CNX_Cinema_SoldSeats);
+                        // console.log("CNX Cinema Seats: ", CNX_Cinema_SoldSeats);
                         break;
                     case 'mbk':
                         BKK_Cinema_SoldSeats = await fetchSoldSeats('mbk');
-                        console.log("BKK Cinema Seats: ", BKK_Cinema_SoldSeats);
+                        // console.log("BKK Cinema Seats: ", BKK_Cinema_SoldSeats);
                         break;
                     default:
                         console.error('Invalid cinema ID:', cinemaId);
@@ -696,7 +696,7 @@
                         downloadBtn.style.display = 'none'; // error ရှိလျှင် download ခလုတ်ကို ဝှက်သည်
                         return;
                     }
-                    console.log('QR code generated successfully!');
+                    // console.log('QR code generated successfully!');
                     downloadBtn.href = canvas.toDataURL('image/png'); // QR code ပုံကို download လုပ်ရန်
                     downloadBtn.download = `what-happened-to-the-wolf-booking.png`;
                 });

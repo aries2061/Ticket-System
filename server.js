@@ -26,7 +26,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
-console.log('Firebase initialized successfully.');
+// console.log('Firebase initialized successfully.');
 
 
 // Middleware
@@ -41,7 +41,7 @@ app.get('/api/seats/:cinemaId', async (req, res) => {
     try {
         const cinemaId = parseInt(req.params.cinemaId, 10);
 
-        // console.log('Received cinemaId:', cinemaId);
+        // // // console.log('Received cinemaId:', cinemaId);
 
         if (isNaN(cinemaId)) {
             return res.status(400).json({ error: 'Cinema ID must be a number' });
@@ -62,7 +62,7 @@ app.get('/api/seats/:cinemaId', async (req, res) => {
                 return res.status(400).json({ error: 'Invalid cinema ID' });
         }
 
-        // console.log('Cinema code from env:', cinemaCode);
+        // // // console.log('Cinema code from env:', cinemaCode);
 
         if (!cinemaCode) {
             return res.status(500).json({ error: 'Cinema code not configured for this cinema ID' });
@@ -76,7 +76,18 @@ app.get('/api/seats/:cinemaId', async (req, res) => {
         }
         
         const cinemaData = cinemaSnap.data();
-        const soldSeats = cinemaData.soldSeats || [];
+
+        // Clean up the soldSeats array - remove any spaces
+        const cleanedSoldSeats = cinemaData.soldSeats.map(seat => {
+            if (typeof seat === 'string') {
+                return seat.trim();
+            }
+            return seat;
+        });
+
+        const soldSeats = cleanedSoldSeats || [];
+
+        // console.log("Sold Seats:", soldSeats, " at Cinema: ",cinemaData.cinemaName);
         
         res.json({
             success: true,
@@ -95,9 +106,9 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`Visit http://localhost:${PORT} to view the application`);
-    console.log('API Endpoints:');
-    console.log(`  GET  /api/seats/:cinemaId - Get sold seats for a cinema`);
-    console.log(`  POST /api/seats - Store new seat bookings`);
+    // console.log(`Server running on port ${PORT}`);
+    // console.log(`Visit http://localhost:${PORT} to view the application`);
+    // console.log('API Endpoints:');
+    // console.log(`  GET  /api/seats/:cinemaId - Get sold seats for a cinema`);
+    // console.log(`  POST /api/seats - Store new seat bookings`);
 });
