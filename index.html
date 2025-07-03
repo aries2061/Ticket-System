@@ -316,14 +316,12 @@
                             }
                         });
                     </script>
-                    <p class="invisible">စုစုပေါင်းကျသင့်ငွေ: <span id="totalPriceInfo" class="font-bold text-green-400">0 Baht</span></p>
-                    <a href="https://m.me/whathappenedtothewolf" target="_blank" id="confirmBookingBtn" class="btn btn-primary inline-flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-messenger me-2" viewBox="0 0 16 16">
-                            <path d="M0 7.76C0 3.301 3.493 0 8 0s8 3.301 8 7.76-3.493 7.76-8 7.76c-.81 0-1.586-.107-2.316-.307a.64.64 0 0 0-.427.03l-1.588.702a.64.64 0 0 1-.898-.566l-.044-1.423a.64.64 0 0 0-.215-.456C.956 12.108 0 10.092 0 7.76m5.546-1.459-2.35 3.728c-.225.358.214.761.551.506l2.525-1.916a.48.48 0 0 1 .578-.002l1.869 1.402a1.2 1.2 0 0 0 1.735-.32l2.35-3.728c.226-.358-.214-.761-.551-.506L9.728 7.381a.48.48 0 0 1-.578.002L7.281 5.98a1.2 1.2 0 0 0-1.735.32z"/>
-                        </svg>
-                        Go to Page Messenger
-                    </a>
-                    
+                    <p class="py-5">စုစုပေါင်းကျသင့်ငွေ: <span id="totalPriceInfo" class="font-bold text-green-400">0 Baht</span></p>
+                    <form>
+                        <button type="button" id="confirmBookingBtn" class="btn btn-primary inline-flex items-center">
+                            Confirm Payment
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -387,7 +385,7 @@
                  'maesot': {
                     name: 'SF CINEMA (MAE SOT)',
                     time: '၁၉/၇/၂၀၂၅ ညနေ ၃:၀၀',
-                    prices: { n: 300, p: 500, s: 800 },
+                    prices: { n: 300, p: 450, s: 950 },
                     rowLabels: ["M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"],
                     layout: [
                         "____nnnnnnnnnnnnnnnn____",   // M: 22
@@ -408,7 +406,7 @@
                 'chiangmai': {
                     name: 'SFX CINEMA (MAYA CHIANGMAI)',
                     time: '၁၉/၇/၂၀၂၅ ညနေ ၆:၀၀',
-                    prices: { n: 300, p: 500, s: 800 },
+                    prices: { n: 350, p: 450, s: 1000 },
                     rowLabels: ["N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"],
                     layout: [
                         "nnnnnnnnnnnnnnnnnnnnnnnn",  // N: 24
@@ -430,7 +428,7 @@
                 'mbk': {
                     name: 'SF CINEMA (MBK CENTER)',
                     time: '၁၉/၇/၂၀၂၅ ညနေ ၄:၀၀',
-                    prices: { n: 300, p: 500, s: 800 },
+                    prices: { n: 400, p: 550, s: 1200 },
                     rowLabels: ["P", "N", "M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"],
                     layout: [
                         "nnnnnnnnnn_nnnnnnnnnn", // P: 20
@@ -520,7 +518,8 @@
                         
                         if (data.success && data.soldSeats) {
                             // Store the sold seats data for later use when generating seating plan
-                            return soldSeatsData = data.soldSeats[0].split(',');
+                            console.log("Sold Seats Data: ", data.soldSeats);
+                            return soldSeatsData = data.soldSeats;
                             
                         } else {
                             console.error('Failed to load sold seats data');
@@ -589,11 +588,18 @@
                                 const price = selectedCinema.prices[seatType];
                                 let priceClass = '';
                                 if(price === 300) priceClass = 'price-300';
+                                else if(price === 350) priceClass = 'price-350';
+                                else if(price === 400) priceClass = 'price-400';
+                                else if(price === 450) priceClass = 'price-450';
                                 else if(price === 500) priceClass = 'price-500';
+                                else if(price === 550) priceClass = 'price-550';
                                 else if(price === 800) priceClass = 'price-800';
+                                else if(price === 950) priceClass = 'price-950';
+                                else if(price === 1000) priceClass = 'price-1000';
+                                else if(price === 1200) priceClass = 'price-1200';
 
                                 seat.className = `seat ${priceClass}`; // ဈေးနှုန်းအလိုက် အရောင်
-                                
+
                                 // Seat disable codes will be added here
                                 if (cinemaId === 'maesot' && Maesot_Cinema_SoldSeats.includes(seatId)) {
                                     seat.className='seat sold'; // SF CINEMA (MAE SOT) ရောင်းပြီးသား ခုံများ
@@ -684,6 +690,7 @@
 
             // QR Code ကို ဖန်တီးပြီး download လုပ်ရန်
             function generateAndSetupQRCode(sortedSeats, bookingTimeText) {
+                /*
                 const canvas = document.getElementById('qrCanvas');
                 const downloadBtn = document.getElementById('downloadQRBtn');
 
@@ -700,6 +707,7 @@
                     downloadBtn.href = canvas.toDataURL('image/png'); // QR code ပုံကို download လုပ်ရန်
                     downloadBtn.download = `what-happened-to-the-wolf-booking.png`;
                 });
+                */
             }
 
             // Event Listeners များ
@@ -712,7 +720,48 @@
                 });
             });
 
-            // confirmBookingBtn.addEventListener('click', showPaymentPage);
+            confirmBookingBtn.addEventListener('click', () => {
+                alert('Cinema Name: ' + selectedCinema.name + '\n' +
+                      'Showtime: ' + selectedCinema.time + '\n' +
+                      'Selected Seats: ' + selectedSeats.map(s => s.id).sort().join(', ') + '\n' +
+                      'Total Price: ' + totalPrice + ' Baht');
+                // Get cinema code based on selected cinema name
+                let cinemaCode = 0;
+                if (selectedCinema.name === 'SF CINEMA (MAE SOT)') {
+                    cinemaCode = 1;
+                } else if (selectedCinema.name === 'SFX CINEMA (MAYA CHIANGMAI)') {
+                    cinemaCode = 2;
+                } else if (selectedCinema.name === 'SF CINEMA (MBK CENTER)') {
+                    cinemaCode = 3;
+                }
+                
+                // Create the data payload
+                const bookingData = {
+                    cinemaId: cinemaCode,
+                    selectedSeats: selectedSeats.map(s => s.id).sort().join(', ')
+                };
+                
+                // Send POST request to API endpoint
+                fetch('http://localhost:3000/api/seats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(bookingData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showPaymentPage();
+                    } else {
+                        alert('Booking failed: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error submitting booking:', error);
+                    alert('An error occurred while processing your booking. Please try again.');
+                });
+            });
             
             paymentLink.addEventListener('click', () => {
                 clearInterval(countdownInterval); // ငွေပေးချေမှု လင့်ခ်ကို နှိပ်လျှင် countdown ကို ရပ်သည်
