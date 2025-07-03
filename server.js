@@ -82,7 +82,16 @@ app.get('/api/seats/:cinemaId', async (req, res) => {
         }
         
         const cinemaData = cinemaSnap.data();
-        const soldSeats = cinemaData.soldSeats || [];
+
+        // Clean up the soldSeats array - remove any spaces
+        const cleanedSoldSeats = cinemaData.soldSeats.map(seat => {
+            if (typeof seat === 'string') {
+                return seat.trim();
+            }
+            return seat;
+        });
+
+        const soldSeats = cleanedSoldSeats || [];
 
         console.log("Sold Seats:", soldSeats, " at Cinema: ",cinemaData.cinemaName);
         
@@ -103,14 +112,17 @@ app.post('/api/seats', async (req, res) => {
         const { selectedSeats } = req.body;
         const cinemaId = parseInt(req.body.cinemaId, 10); // Ensure cinemaId is a number
 
-        // console.log("Received cinemaId:", cinemaId);
-        // console.log("Type of cinemaId:", typeof cinemaId);
-
         // Convert selectedSeats to array of strings if needed
-        const seatStringArray = selectedSeats.split(',');
-// Result: ["L22", "L23"]
-
-        // console.log("Converted selectedSeats to string array:", seatStringArray);
+        // Convert selectedSeats to array and ensure no spaces in each seat
+        let seatStringArray;
+        if (Array.isArray(selectedSeats)) {
+            seatStringArray = selectedSeats.map(seat => 
+            typeof seat === 'string' ? seat.trim() : seat);
+        } else if (typeof selectedSeats === 'string') {
+            seatStringArray = selectedSeats.split(',').map(seat => seat.trim());
+        } else {
+            seatStringArray = [];
+        }
 
         if (!cinemaId || !seatStringArray || !Array.isArray(seatStringArray)) {
             return res.status(400).json({ 
