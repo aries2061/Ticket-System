@@ -14,13 +14,13 @@ const PORT = process.env.PORT || 3000;
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDjTgOc2O83MSNYkixcevimaixL9jox0qA",
-  authDomain: "movie-ticket-2c720.firebaseapp.com",
-  projectId: "movie-ticket-2c720",
-  storageBucket: "movie-ticket-2c720.firebasestorage.app",
-  messagingSenderId: "381146524736",
-  appId: "1:381146524736:web:6a3df343968952d50a83a5",
-  measurementId: "G-YM8JD5T9ZC"
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID,
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
