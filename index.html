@@ -48,8 +48,18 @@
         }
         /* ဈေးနှုန်းအလိုက် ခုံအရောင်များ */
         .seat.price-300 { background-color: #34D399; color: #064E3B; } /* အစိမ်းရောင် */
+        .seat.price-350 { background-color: #34D399; color: #064E3B; } /* အစိမ်းရောင် */
+        .seat.price-400 { background-color: #34D399; color: #064E3B; } /* အစိမ်းရောင် */
+
+
         .seat.price-500 { background-color: #60A5FA; color: #1E3A8A; } /* အပြာရောင် */
+        .seat.price-450 { background-color: #60A5FA; color: #1E3A8A; } /* အပြာရောင် */
+        .seat.price-550 { background-color: #60A5FA; color: #1E3A8A; } /* အပြာရောင် */
+
         .seat.price-800 { background-color: #F472B6; color: #831843; } /* ပန်းရောင် */
+        .seat.price-950 { background-color: #F472B6; color: #831843; } /* ပန်းရောင် */
+        .seat.price-1000 { background-color: #F472B6; color: #831843; } /* ပန်းရောင် */
+        .seat.price-1200 { background-color: #F472B6; color: #831843; } /* ပန်းရောင် */
 
         /* ရွေးချယ်ထားသော ခုံများ */
         .seat.selected { background-color: #FBBF24; color: #78350F; font-weight: bold; } /* ပယင်းရောင် */
@@ -225,28 +235,101 @@
                 
                 <div class="screen">SCREEN</div>
                 <div id="seatingContainer" class="overflow-x-auto pb-4">
-                  <div id="seatingGrid" class="flex flex-col items-center my-6"></div>
+                  <div id="seatingGrid" class="flex flex-col items-center my-6 min-w-max"></div>
                 </div>
 
 
                 <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 my-6">
+
                     <div class="flex items-center"><div class="seat price-300 !m-0"></div><span class="ml-2">300 Baht</span></div>
                     <div class="flex items-center"><div class="seat price-500 !m-0"></div><span class="ml-2">500 Baht</span></div>
                     <div class="flex items-center"><div class="seat price-800 !m-0"></div><span class="ml-2">800 Baht</span></div>
+
+                    <script>
+                        // Check if cinema name is 'SF CINEMA (MAE SOT)'
+                        const legendContainer = document.currentScript.parentElement;
+                        const updateLegend = () => {
+                            const cinemaNameEl = document.getElementById('cinemaName');
+                            if (cinemaNameEl && cinemaNameEl.textContent === 'SF CINEMA (MAE SOT)') {
+                                // Replace the standard price legends with the special ones for Mae Sot
+                                legendContainer.innerHTML = `
+                                    <div class="flex items-center"><div class="seat price-300 !m-0"></div><span class="ml-2">300 Baht</span></div>
+                                    <div class="flex items-center"><div class="seat price-450 !m-0"></div><span class="ml-2">450 Baht</span></div>
+                                    <div class="flex items-center"><div class="seat price-950 !m-0"></div><span class="ml-2">950 Baht</span></div>
+                                    <div class="flex items-center"><div class="seat selected !m-0"></div><span class="ml-2">ရွေးချယ်ထား</span></div>
+                                    <div class="flex items-center"><div class="seat sold !m-0"></div><span class="ml-2">ရောင်းပြီး</span></div>
+                                `;
+                            }
+                            else if(cinemaNameEl && cinemaNameEl.textContent === 'SFX CINEMA (MAYA CHIANGMAI)'){
+                                // Replace the standard price legends with the special ones for MAYA CHIANGMAI
+                                legendContainer.innerHTML = `
+                                    <div class="flex items-center"><div class="seat price-350 !m-0"></div><span class="ml-2">350 Baht</span></div>
+                                    <div class="flex items-center"><div class="seat price-450 !m-0"></div><span class="ml-2">450 Baht</span></div>
+                                    <div class="flex items-center"><div class="seat price-1000 !m-0"></div><span class="ml-2">1000 Baht</span></div>
+                                    <div class="flex items-center"><div class="seat selected !m-0"></div><span class="ml-2">ရွေးချယ်ထား</span></div>
+                                    <div class="flex items-center"><div class="seat sold !m-0"></div><span class="ml-2">ရောင်းပြီး</span></div>
+                                `;
+                            }
+                            else if(cinemaNameEl && cinemaNameEl.textContent === 'SF CINEMA (MBK CENTER)'){
+                                // Replace the standard price legends with the special ones for MAYA CHIANGMAI
+                                legendContainer.innerHTML = `
+                                    <div class="flex items-center"><div class="seat price-400 !m-0"></div><span class="ml-2">400 Baht</span></div>
+                                    <div class="flex items-center"><div class="seat price-550 !m-0"></div><span class="ml-2">550 Baht</span></div>
+                                    <div class="flex items-center"><div class="seat price-1200 !m-0"></div><span class="ml-2">1200 Baht</span></div>
+                                    <div class="flex items-center"><div class="seat selected !m-0"></div><span class="ml-2">ရွေးချယ်ထား</span></div>
+                                    <div class="flex items-center"><div class="seat sold !m-0"></div><span class="ml-2">ရောင်းပြီး</span></div>
+                                `;
+                            }
+                        };
+                        
+                        // Run immediately and also when cinema selection changes
+                        updateLegend();
+                        const observer = new MutationObserver(updateLegend);
+                        observer.observe(document.getElementById('cinemaName') || document.body, {childList: true, subtree: true, characterData: true});
+                    </script>
+
                     <div class="flex items-center"><div class="seat selected !m-0"></div><span class="ml-2">ရွေးချယ်ထား</span></div>
                     <div class="flex items-center"><div class="seat sold !m-0"></div><span class="ml-2">ရောင်းပြီး</span></div>
                 </div>
 
                 <div class="text-center mt-6 bg-gray-900 p-4 rounded-lg">
                     <p class="text-lg md:text-xl">ရွေးချယ်ထားသောခုံများ: <span id="selectedSeatsInfo" class="font-bold text-amber-400">-</span></p>
-                    <p class="text-xl md:text-2xl mt-2">စုစုပေါင်းကျသင့်ငွေ: <span id="totalPriceInfo" class="font-bold text-green-400">0 Baht</span></p>
-                    <button id="confirmBookingBtn" class="btn btn-primary mt-4 text-lg">Confirm</button>
+                    <button id="copySelectedSeatsBtn" class="ml-2 px-2 mt-2 py-1 bg-gray-700 text-sm rounded hover:bg-gray-600" title="Copy to clipboard"> 
+                        click to copy info
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                    </button>
+
+                    <script>
+                        document.getElementById('copySelectedSeatsBtn').addEventListener('click', function() {
+                            const cinemaNameInfo = document.getElementById('cinemaName').textContent;
+                            const selectedSeatsText = document.getElementById('selectedSeatsInfo').textContent+", "+cinemaNameInfo;
+                            if (selectedSeatsText !== '-') {
+                                navigator.clipboard.writeText(selectedSeatsText).then(() => {
+                                    // Visual feedback for copy success
+                                    this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>';
+                                    setTimeout(() => {
+                                        this.innerHTML = 'click to copy info <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></path></svg>';
+                                    }, 1000);
+                                });
+                            }
+                        });
+                    </script>
+                    <p class="invisible">စုစုပေါင်းကျသင့်ငွေ: <span id="totalPriceInfo" class="font-bold text-green-400">0 Baht</span></p>
+                    <a href="https://m.me/whathappenedtothewolf" target="_blank" id="confirmBookingBtn" class="btn btn-primary inline-flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-messenger me-2" viewBox="0 0 16 16">
+                            <path d="M0 7.76C0 3.301 3.493 0 8 0s8 3.301 8 7.76-3.493 7.76-8 7.76c-.81 0-1.586-.107-2.316-.307a.64.64 0 0 0-.427.03l-1.588.702a.64.64 0 0 1-.898-.566l-.044-1.423a.64.64 0 0 0-.215-.456C.956 12.108 0 10.092 0 7.76m5.546-1.459-2.35 3.728c-.225.358.214.761.551.506l2.525-1.916a.48.48 0 0 1 .578-.002l1.869 1.402a1.2 1.2 0 0 0 1.735-.32l2.35-3.728c.226-.358-.214-.761-.551-.506L9.728 7.381a.48.48 0 0 1-.578.002L7.281 5.98a1.2 1.2 0 0 0-1.735.32z"/>
+                        </svg>
+                        Go to Page Messenger
+                    </a>
+                    
                 </div>
             </div>
         </div>
 
         <!-- Page 4: Payment -->
-        <div id="paymentPage" class="page">
+        <div id="paymentPage" class="page invisible">
             <div class="bg-gray-800 p-4 md:p-6 rounded-lg shadow-lg text-center relative">
                 <div class="absolute top-4 left-4">
                     <button id="backToSeatingBtn" class="btn btn-secondary btn-back">&lt; နောက်သို့</button>
@@ -307,7 +390,7 @@
                     prices: { n: 300, p: 500, s: 800 },
                     rowLabels: ["M", "L", "K", "J", "H", "G", "F", "E", "D", "C", "B", "A", "AA"],
                     layout: [
-                        "nnn_nnnnnnnnnnnnnnnn_nnn",   // M: 22
+                        "____nnnnnnnnnnnnnnnn____",   // M: 22
                         "nnn_nnnnnnnnnnnnnnnn_nnn",   // L: 22
                         "nnn_nnnnnnnnnnnnnnnn_nnn",   // K: 22
                         "nnn_nnnnnnnnnnnnnnnn_nnn",   // J: 22
@@ -319,7 +402,7 @@
                         "ppp_pppppppppppppppp_ppp",   // C: 22
                         "ppp_pppppppppppppppp_ppp",   // B: 22
                         "ppp_pppppppppppppppp_ppp",   // A: 22
-                        "sss_sssssss_sss",            // AA: 13
+                        "_ss__ss_ss_ss_ss_ss__ss_",            // AA: 13
                     ]
                 },
                 'chiangmai': {
@@ -364,7 +447,7 @@
                         "ppppppppp_ppppppppp",   // C: 18
                         "ppppppppp_ppppppppp",   // B: 18
                         "ppppppppp_ppppppppp",   // A: 18
-                        "ssssss_ssssss",         // AA: 12
+                        "_ss_ss_ss_ss_ss_ss_",         // AA: 12
                     ]
                 }
             };
@@ -592,7 +675,7 @@
                 totalPriceEl.textContent = `${totalPrice} Baht`;
                 bookingTimeEl.textContent = bookingTimeText;
 
-                paymentLink.href = 'https://m.me/24framesmozart'; // ငွေပေးချေမှု လင့်ခ်
+                paymentLink.href = 'https://m.me/whathappenedtothewolf'; // ငွေပေးချေမှု လင့်ခ်
 
                 navigateTo('paymentPage');
                 startCountdown(); // Countdown timer ကို စတင်သည်
@@ -629,7 +712,7 @@
                 });
             });
 
-            confirmBookingBtn.addEventListener('click', showPaymentPage);
+            // confirmBookingBtn.addEventListener('click', showPaymentPage);
             
             paymentLink.addEventListener('click', () => {
                 clearInterval(countdownInterval); // ငွေပေးချေမှု လင့်ခ်ကို နှိပ်လျှင် countdown ကို ရပ်သည်
